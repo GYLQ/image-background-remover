@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BG Remover - Remove Image Background</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      background-color: #f9fafb;
+    }
+    header {
+      background-color: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 24px 0;
+      text-align: center;
+    }
+    header h1 { font-size: 24px; font-weight: 700; color: #111827; }
+    header p { color: #6b7280; font-size: 14px; margin-top: 4px; }
+    main { max-width: 512px; margin: 0 auto; padding: 48px 24px; }
+    .upload-zone {
+      border: 2px dashed #d1d5db;
+      border-radius: 16px;
+      padding: 80px 40px;
+      text-align: center;
+      cursor: pointer;
+      background-color: #fff;
+      transition: all 0.2s;
+    }
+    .upload-zone:hover { border-color: #6366f1; background-color: #fafafa; }
+    .upload-zone .icon { font-size: 64px; margin-bottom: 16px; }
+    .upload-zone p { color: #374151; font-weight: 500; margin-bottom: 8px; }
+    .upload-zone span { color: #9ca3af; font-size: 14px; }
+    .status { margin-top: 24px; padding: 16px; border-radius: 12px; text-align: center; }
+    .status.loading { background-color: #fef9c3; color: #854d0e; }
+    .status.error { background-color: #fee2e2; color: #991b1b; }
+    .status .icon { font-size: 32px; margin-bottom: 8px; }
+    .result { margin-top: 32px; text-align: center; }
+    .result img { max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .btn-group { margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      padding: 12px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn-primary { background-color: #4f46e5; color: #fff; }
+    .btn-primary:hover { background-color: #4338ca; }
+    .btn-secondary { background-color: #f3f4f6; color: #374151; }
+    .btn-secondary:hover { background-color: #e5e7eb; }
+    footer { text-align: center; padding: 24px; color: #9ca3af; font-size: 14px; }
+    footer a { color: #818cf8; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🪄 BG Remover</h1>
+    <p>Remove Image Background</p>
+  </header>
+
+  <main>
+    <!-- Hidden file input -->
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="upload-zone">
+      <div class="icon">📤</div>
+      <p>点击或拖拽上传图片</p>
+      <span>JPG, PNG, WebP · 最大 4MB</span>
+    </div>
+
+    <!-- Status -->
+    <div id="status"></div>
+
+    <!-- Result -->
+    <div id="result"></div>
+  </main>
+
+  <footer>
+    Powered by <a href="https://www.remove.bg" target="_blank">remove.bg</a> API
+  </footer>
+
+  <script>
+    const API_URL = '/api/remove-bg'; // Next.js API route
+    const MAX_SIZE = 4 * 1024 * 1024;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
+    const statusEl = document.getElementById('status');
+    const resultEl = document.getElementById('result');
+
+    // Click zone to open file picker
+    uploadZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // File selected
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        processFile(fileInput.files[0]);
+      }
+    });
+
+    // Drag and drop
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#6366f1';
+      uploadZone.style.backgroundColor = '#fafafa';
+    });
+
+    uploadZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#d1d5db';
+      uploadZone.style.backgroundColor = '#fff';
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#d1d5db';
+      uploadZone.style.backgroundColor = '#fff';
+      if (e.dataTransfer.files.length > 0) {
+        processFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    async function processFile(file) {
+      if (!allowedTypes.includes(file.type)) {
+        showStatus('error', '请上传 JPG、PNG 或 WebP 格式图片');
+        return;
+      }
+      if (file.size > MAX_SIZE) {
+        showStatus('error', '文件过大，请选择小于 4MB 的图片');
+        return;
+      }
+
+      showStatus('loading', '处理中，请稍候...');
+      resultEl.innerHTML = '';
+
+      const formData = new FormData();
+      formData.append('image_file', file);
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          let msg = '处理失败，请稍后重试';
+          try { const d = await res.json(); msg = d.error || msg; } catch {}
+          throw new Error(msg);
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+
+        showStatus('success', '处理完成！');
+        resultEl.innerHTML = `
+          <div class="result">
+            <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);display:inline-block">
+              <img src="${url}" alt="Result" style="max-width:100%;max-height:400px;border-radius:8px">
+            </div>
+            <div class="btn-group">
+              <a href="${url}" download="no-bg.png" class="btn btn-primary">⬇️ 下载 PNG</a>
+              <button onclick="reset()" class="btn btn-secondary">处理下一张</button>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        showStatus('error', err.message || '处理失败，请稍后重试');
+      }
+    }
+
+    function showStatus(type, message) {
+      const icons = { loading: '⏳', error: '❌', success: '✅' };
+      if (type === 'idle') {
+        statusEl.innerHTML = '';
+        return;
+      }
+      statusEl.innerHTML = `
+        <div class="status ${type}">
+          <div class="icon">${icons[type]}</div>
+          <div>${message}</div>
+          ${type === 'error' ? '<button onclick="reset()" style="margin-top:12px;padding:8px 20px;background:#fecaca;border:none;border-radius:8px;cursor:pointer;color:#991b1b">重试</button>' : ''}
+        </div>
+      `;
+    }
+
+    function reset() {
+      statusEl.innerHTML = '';
+      resultEl.innerHTML = '';
+      fileInput.value = '';
+    }
+
+    // Init
+    showStatus('idle');
+  </script>
+</body>
+</html>

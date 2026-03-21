@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
@@ -9,6 +9,7 @@ export default function Home() {
   const [statusMsg, setStatusMsg] = useState<string>('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const MAX_SIZE = 4 * 1024 * 1024;
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -69,121 +70,114 @@ export default function Home() {
     e.preventDefault();
   }
 
+  function openFilePicker() {
+    fileInputRef.current?.click();
+  }
+
   function reset() {
     setStatus('idle');
     setStatusMsg('');
     setPreviewUrl(null);
     setDownloadUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', fontFamily: 'system-ui, sans-serif' }}>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 py-6">
-        <div className="max-w-xl mx-auto px-6 text-center">
-          <h1 className="text-2xl font-bold text-gray-800">🪄 BG Remover</h1>
-          <p className="text-gray-500 text-sm mt-1">Remove Image Background</p>
-        </div>
+      <header style={{ backgroundColor: '#fff', borderBottom: '1px solid #e5e7eb', padding: '24px 0', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111827' }}>🪄 BG Remover</h1>
+        <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>Remove Image Background</p>
       </header>
 
       {/* Main */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12">
-        <div className="w-full max-w-lg">
+      <main style={{ maxWidth: '512px', margin: '0 auto', padding: '48px 24px' }}>
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleFileChange}
+          id="file-input"
+          style={{ display: 'none' }}
+        />
 
-          {/* Upload Zone - label wraps input for reliable click capture */}
-          <label
-            className={`
-              relative block border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-all duration-200 select-none overflow-hidden
-              ${status === 'loading' ? 'opacity-60 pointer-events-none' : 'border-gray-300 bg-white hover:border-indigo-400 hover:bg-gray-50'}
-            `}
-          >
-            {/* Invisible file input overlaid on entire drop zone */}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleFileChange}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-              disabled={status === 'loading'}
-            />
+        {/* Upload Zone */}
+        <div
+          onClick={openFilePicker}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          style={{
+            border: '2px dashed #d1d5db',
+            borderRadius: '16px',
+            padding: '80px 40px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            backgroundColor: '#fff',
+            transition: 'all 0.2s',
+            opacity: status === 'loading' ? 0.6 : 1,
+            pointerEvents: status === 'loading' ? 'none' : 'auto',
+          }}
+        >
+          <div style={{ fontSize: '64px', marginBottom: '16px' }}>📤</div>
+          <p style={{ color: '#374151', fontWeight: '500', marginBottom: '8px' }}>点击或拖拽上传图片</p>
+          <p style={{ color: '#9ca3af', fontSize: '14px' }}>JPG, PNG, WebP · 最大 4MB</p>
+        </div>
 
-            {/* Drag events on the label */}
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
+        {/* Loading */}
+        {status === 'loading' && (
+          <div style={{ marginTop: '24px', padding: '16px', borderRadius: '12px', backgroundColor: '#fef9c3', color: '#854d0e', textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', marginBottom: '8px' }}>⏳</div>
+            <p>{statusMsg}</p>
+          </div>
+        )}
+
+        {/* Error */}
+        {status === 'error' && (
+          <div style={{ marginTop: '24px', padding: '16px', borderRadius: '12px', backgroundColor: '#fee2e2', color: '#991b1b', textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', marginBottom: '8px' }}>❌</div>
+            <p style={{ marginBottom: '12px' }}>{statusMsg}</p>
+            <button
+              onClick={(e) => { e.stopPropagation(); reset(); }}
+              style={{ padding: '8px 20px', backgroundColor: '#fecaca', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#991b1b' }}
             >
-              <div className="text-6xl mb-4 pointer-events-none">📤</div>
-              <p className="text-gray-700 font-medium mb-1 pointer-events-none">点击或拖拽上传图片</p>
-              <p className="text-gray-400 text-sm pointer-events-none">JPG, PNG, WebP · 最大 4MB</p>
-            </div>
-          </label>
+              重试
+            </button>
+          </div>
+        )}
 
-          {/* Loading */}
-          {status === 'loading' && (
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-100 rounded-xl text-center">
-              <div className="text-2xl mb-2">⏳</div>
-              <p className="text-yellow-700">{statusMsg}</p>
+        {/* Success */}
+        {status === 'success' && previewUrl && (
+          <div style={{ marginTop: '32px', textAlign: 'center' }}>
+            <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', display: 'inline-block' }}>
+              <img
+                src={previewUrl}
+                alt="Result"
+                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
+              />
             </div>
-          )}
-
-          {/* Error */}
-          {status === 'error' && (
-            <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-xl text-center">
-              <div className="text-2xl mb-2">❌</div>
-              <p className="text-red-700 mb-3">{statusMsg}</p>
+            <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a
+                href={downloadUrl!}
+                download="no-bg.png"
+                style={{ padding: '12px 32px', backgroundColor: '#4f46e5', color: '#fff', borderRadius: '12px', fontWeight: '600', textDecoration: 'none' }}
+              >
+                ⬇️ 下载 PNG
+              </a>
               <button
                 onClick={reset}
-                className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors"
+                style={{ padding: '12px 32px', backgroundColor: '#f3f4f6', color: '#374151', borderRadius: '12px', fontWeight: '600', border: 'none', cursor: 'pointer' }}
               >
-                重试
+                处理下一张
               </button>
             </div>
-          )}
-
-          {/* Success */}
-          {status === 'success' && previewUrl && (
-            <div className="mt-8 text-center">
-              <div className="bg-white rounded-2xl p-4 shadow-lg inline-block">
-                <img
-                  src={previewUrl}
-                  alt="Result"
-                  className="max-w-full rounded-lg"
-                  style={{ maxHeight: '400px' }}
-                />
-              </div>
-              <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-                <a
-                  href={downloadUrl!}
-                  download="no-bg.png"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors"
-                >
-                  ⬇️ 下载 PNG
-                </a>
-                <button
-                  onClick={reset}
-                  className="px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
-                >
-                  处理下一张
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center">
-        <p className="text-gray-400 text-sm">
-          Powered by{' '}
-          <a
-            href="https://www.remove.bg"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-indigo-500 hover:text-indigo-600 underline"
-          >
-            remove.bg
-          </a>{' '}
-          API
-        </p>
+      <footer style={{ textAlign: 'center', padding: '24px', color: '#9ca3af', fontSize: '14px' }}>
+        Powered by <a href="https://www.remove.bg" target="_blank" style={{ color: '#818cf8', textDecoration: 'none' }}>remove.bg</a> API
       </footer>
     </div>
   );
