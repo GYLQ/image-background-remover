@@ -88,7 +88,7 @@ function json(data, status = 200) {
 
 function parseSession(cookie) {
   try {
-    return JSON.parse(decodeURIComponent(cookie));
+    return JSON.parse(decodeURIComponent(atob(cookie)));
   } catch {
     return null;
   }
