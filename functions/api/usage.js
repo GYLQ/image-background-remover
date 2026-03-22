@@ -1,9 +1,9 @@
-// GET /api/usage?userId=xxx&date=YYYY-MM-DD
+// GET /api/usage?userId=xxx
 // Returns usage stats for a user
 
 function parseSession(cookie) {
   try {
-    return JSON.parse(decodeURIComponent(cookie));
+    return JSON.parse(decodeURIComponent(atob(cookie)));
   } catch {
     return null;
   }
@@ -27,7 +27,7 @@ export async function onRequest(context) {
 
   const url = new URL(request.url);
   const userId = url.searchParams.get('userId');
-  const dateParam = url.searchParams.get('date'); // YYYY-MM-DD
+  const dateParam = url.searchParams.get('date');
 
   if (!userId) {
     return json({ error: 'userId required' }, 400);
@@ -39,15 +39,15 @@ export async function onRequest(context) {
   try {
     // Today's usage
     const todayRows = await env.DB.prepare(
-      "SELECT COUNT(*) as count FROM credit_usage WHERE user_id = ? AND action = 'remove_bg' AND datetime(created_at/1000, 'unixepoch') = ?"
-    ).bind(userId, today).all();
+      "SELECT COUNT(*) as count FROM credit_usage WHERE user_id = ? AND action = 'remove_bg' AND datetime(created_at/1000, 'unixepoch') >= ?"
+    ).bind(userId, today + ' 00:00:00').all();
 
     const todayCount = todayRows.results?.[0]?.count ?? 0;
 
     // This month's usage
     const monthRows = await env.DB.prepare(
       "SELECT COUNT(*) as count FROM credit_usage WHERE user_id = ? AND action = 'remove_bg' AND datetime(created_at/1000, 'unixepoch') >= ?"
-    ).bind(userId, monthStart).all();
+    ).bind(userId, monthStart + ' 00:00:00').all();
 
     const monthCount = monthRows.results?.[0]?.count ?? 0;
 

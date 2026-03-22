@@ -30,7 +30,7 @@ async function verifySession(context) {
   const match = cookieHeader.match(/session=([^;]+)/);
   if (!match) return null;
   try {
-    return JSON.parse(decodeURIComponent(match[1]));
+    return JSON.parse(decodeURIComponent(atob(match[1])));
   } catch {
     return null;
   }
