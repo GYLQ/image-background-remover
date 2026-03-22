@@ -7,96 +7,228 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; background: #f9fafb; }
-    header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 24px 0; text-align: center; }
+    header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 24px 0; }
+    header .inner { max-width: 4xl; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
     header h1 { font-size: 24px; font-weight: 700; color: #111827; }
     header p { color: #6b7280; font-size: 14px; margin-top: 4px; }
-    main { max-width: 512px; margin: 0 auto; padding: 48px 24px; }
-    .upload-zone { border: 2px dashed #d1d5db; border-radius: 16px; padding: 80px 40px; text-align: center; cursor: pointer; background: #fff; transition: border-color 0.2s; }
+    .user-info { display: none; align-items: center; gap: 12px; }
+    .user-info img { width: 32px; height: 32px; border-radius: 50%; }
+    .user-info span { font-size: 14px; color: #374151; font-weight: 500; }
+    .btn { padding: 8px 20px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #4f46e5; color: #fff; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-secondary { background: #f3f4f6; color: #374151; }
+    .btn-secondary:hover { background: #e5e7eb; }
+    .auth-gate { display: none; text-align: center; padding: 64px 24px; }
+    .auth-gate .icon { font-size: 64px; margin-bottom: 16px; }
+    .auth-gate h2 { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+    .auth-gate p { color: #6b7280; margin-bottom: 24px; }
+    main { max-width: 3xl; margin: 0 auto; padding: 48px 24px; }
+    .upload-zone { border: 2px dashed #d1d5db; border-radius: 16px; padding: 80px 40px; text-align: center; cursor: pointer; background: #fff; transition: all 0.2s; display: none; }
     .upload-zone:hover { border-color: #6366f1; }
     .upload-zone .icon { font-size: 64px; margin-bottom: 16px; }
     .upload-zone p { color: #374151; font-weight: 500; margin-bottom: 8px; }
     .upload-zone span { color: #9ca3af; font-size: 14px; }
     #file-input { display: none; }
-    .status { margin-top: 24px; padding: 16px; border-radius: 12px; text-align: center; }
+    .status { margin-top: 24px; padding: 16px; border-radius: 12px; text-align: center; display: none; }
     .status.loading { background: #fef9c3; color: #854d0e; }
     .status.error { background: #fee2e2; color: #991b1b; }
     .status .icon { font-size: 32px; margin-bottom: 8px; }
-    .result { margin-top: 32px; text-align: center; }
+    .result { margin-top: 32px; text-align: center; display: none; }
     .result img { max-width: 100%; max-height: 400px; border-radius: 8px; }
     .btn-group { margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn { padding: 12px 32px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; font-size: 16px; }
-    .btn-primary { background: #4f46e5; color: #fff; }
-    .btn-primary:hover { background: #4338ca; }
-    .btn-secondary { background: #f3f4f6; color: #374151; }
-    .btn-secondary:hover { background: #e5e7eb; }
     footer { text-align: center; padding: 24px; color: #9ca3af; font-size: 14px; }
     footer a { color: #818cf8; text-decoration: none; }
+    /* Comparison view */
+    .comparison { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; display: none; }
+    .comparison-header { padding: 16px 24px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; font-size: 14px; color: #6b7280; }
+    .comparison-body { display: flex; }
+    .comparison-body > div { flex: 1; padding: 24px; }
+    .comparison-body > div:first-child { border-right: 1px solid #f3f4f6; }
+    .comparison-body > div .label { font-size: 12px; color: #9ca3af; text-align: center; margin-top: 12px; }
+    .img-box { background: #f9fafb; border-radius: 12px; padding: 16px; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+    .img-box.checkerboard { background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjZjRmNGY0Ii8+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSIjZWVlZWVlIi8+PC9zdmc+'); }
+    .img-box img { max-width: 100%; max-height: 320px; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <header><h1>🪄 BG Remover</h1><p>Remove Image Background</p></header>
+  <header>
+    <div class="inner">
+      <div>
+        <h1>🪄 BG Remover</h1>
+        <p>Remove Image Background</p>
+      </div>
+      <div class="user-info" id="user-info">
+        <img id="user-avatar" src="" alt="">
+        <span id="user-name"></span>
+        <button onclick="location.href='/auth/logout'" class="btn btn-secondary">退出</button>
+      </div>
+      <div id="auth-buttons">
+        <a href="/auth/login" class="btn btn-primary">使用 Google 登录</a>
+      </div>
+    </div>
+  </header>
+
   <main>
+    <!-- Auth gate: shown when not logged in -->
+    <div class="auth-gate" id="auth-gate">
+      <div class="icon">🔐</div>
+      <h2>需要登录</h2>
+      <p>登录后才能使用图片背景移除功能</p>
+      <a href="/auth/login" class="btn btn-primary">使用 Google 登录</a>
+    </div>
+
+    <!-- Upload zone: shown when logged in -->
     <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" style="display:none">
-    <div class="upload-zone" id="upload-zone">
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
       <div class="icon">📤</div>
       <p>点击或拖拽上传图片</p>
       <span>JPG, PNG, WebP · 最大 4MB</span>
     </div>
-    <div id="status"></div>
-    <div id="result"></div>
+
+    <!-- Status messages -->
+    <div class="status" id="status"></div>
+
+    <!-- Result -->
+    <div id="result">
+      <div class="comparison" id="comparison">
+        <div class="comparison-header">
+          <span>Original</span>
+          <span>Background Removed</span>
+        </div>
+        <div class="comparison-body">
+          <div>
+            <div class="img-box" id="original-preview"></div>
+            <div class="label">Original</div>
+          </div>
+          <div>
+            <div class="img-box checkerboard" id="result-preview"></div>
+            <div class="label">Background Removed</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-group" id="action-buttons" style="display:none">
+        <a id="download-btn" href="#" download="no-bg.png" class="btn btn-primary">⬇️ 下载 PNG</a>
+        <button onclick="reset()" class="btn btn-secondary">处理下一张</button>
+      </div>
+    </div>
   </main>
-  <footer>Powered by <a href="https://www.remove.bg" target="_blank">remove.bg</a> API</footer>
+
+  <footer>
+    Powered by <a href="https://www.remove.bg" target="_blank">remove.bg</a>
+  </footer>
+
   <script>
     const API_KEY = 'BsjaePtc6Vy2jhWZcJkJg71H';
+    const MAX_SIZE = 4 * 1024 * 1024;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
     const uploadZone = document.getElementById('upload-zone');
     const fileInput = document.getElementById('file-input');
     const statusEl = document.getElementById('status');
-    const resultEl = document.getElementById('result');
+    const comparisonEl = document.getElementById('comparison');
+    const actionButtons = document.getElementById('action-buttons');
+    const originalPreview = document.getElementById('original-preview');
+    const resultPreview = document.getElementById('result-preview');
+    const downloadBtn = document.getElementById('download-btn');
+    const userInfo = document.getElementById('user-info');
+    const authButtons = document.getElementById('auth-buttons');
+    const authGate = document.getElementById('auth-gate');
 
-    uploadZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
+    // Drag & drop
     uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor = '#6366f1'; });
     uploadZone.addEventListener('dragleave', e => { e.preventDefault(); uploadZone.style.borderColor = '#d1d5db'; });
-    uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.style.borderColor = '#d1d5db'; if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#d1d5db';
+      if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+    });
+
+    // File selected
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) processFile(fileInput.files[0]);
+    });
 
     async function processFile(file) {
-      if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { showStatus('error','请上传 JPG、PNG 或 WebP 格式图片'); return; }
-      if (file.size > 4*1024*1024) { showStatus('error','文件过大，请选择小于 4MB 的图片'); return; }
+      if (!allowedTypes.includes(file.type)) { showStatus('error', '请上传 JPG、PNG 或 WebP 格式图片'); return; }
+      if (file.size > MAX_SIZE) { showStatus('error', '文件过大，请选择小于 4MB 的图片'); return; }
+
+      // Show original immediately
+      const originalUrl = URL.createObjectURL(file);
+      originalPreview.innerHTML = '<img src="' + originalUrl + '" alt="Original">';
+      resultPreview.innerHTML = '';
+      comparisonEl.style.display = 'block';
+      actionButtons.style.display = 'none';
       showStatus('loading', '处理中，请稍候...');
-      resultEl.innerHTML = '';
+
       const formData = new FormData();
       formData.append('image_file', file);
       formData.append('size', 'auto');
       formData.append('format', 'png');
+
       try {
         const res = await fetch('https://api.remove.bg/v1.0/removebg', {
           method: 'POST',
           headers: { 'X-Api-Key': API_KEY },
           body: formData
         });
-        if (!res.ok) throw new Error('处理失败，请稍后重试');
+        if (!res.ok) throw new Error('处理失败');
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
+        resultPreview.innerHTML = '<img src="' + url + '" alt="Result">';
+        downloadBtn.href = url;
+        actionButtons.style.display = 'flex';
         showStatus('success', '处理完成！');
-        resultEl.innerHTML = '<div class="result">' +
-          '<div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);display:inline-block">' +
-          '<img src="'+url+'" alt="Result" style="max-width:100%;max-height:400px;border-radius:8px">' +
-          '</div><div class="btn-group">' +
-          '<a href="'+url+'" download="no-bg.png" class="btn btn-primary">⬇️ 下载 PNG</a>' +
-          '<button onclick="reset()" class="btn btn-secondary">处理下一张</button>' +
-          '</div></div>';
-      } catch(err) { showStatus('error', err.message || '处理失败，请稍后重试'); }
+      } catch (err) {
+        showStatus('error', err.message || '处理失败，请稍后重试');
+      }
     }
 
     function showStatus(type, msg) {
-      const icons = {loading:'⏳', error:'❌', success:'✅'};
-      if (type === 'idle') { statusEl.innerHTML = ''; return; }
-      const btn = type === 'error' ? '<button onclick="reset()" style="margin-top:12px;padding:8px 20px;background:#fecaca;border:none;border-radius:8px;cursor:pointer;color:#991b1b">重试</button>' : '';
-      statusEl.innerHTML = '<div class="status '+type+'"><div class="icon">'+icons[type]+'</div><div>'+msg+'</div>'+btn+'</div>';
+      const icons = { loading: '⏳', error: '❌', success: '✅' };
+      if (type === 'idle') {
+        statusEl.style.display = 'none';
+        return;
+      }
+      statusEl.className = 'status ' + type;
+      statusEl.style.display = 'block';
+      statusEl.innerHTML = '<div class="icon">' + icons[type] + '</div><div>' + msg + '</div>' +
+        (type === 'error' ? '<button onclick="reset()" style="margin-top:12px;padding:8px 20px;background:#fecaca;border:none;border-radius:8px;cursor:pointer;color:#991b1b">重试</button>' : '');
     }
 
-    function reset() { statusEl.innerHTML = ''; resultEl.innerHTML = ''; fileInput.value = ''; }
-    showStatus('idle');
+    function reset() {
+      comparisonEl.style.display = 'none';
+      actionButtons.style.display = 'none';
+      originalPreview.innerHTML = '';
+      resultPreview.innerHTML = '';
+      statusEl.style.display = 'none';
+      fileInput.value = '';
+    }
+
+    // Auth check on load
+    fetch('/auth/user', { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => {
+        if (d.user) {
+          document.getElementById('user-avatar').src = d.user.image || '';
+          document.getElementById('user-name').textContent = d.user.name || d.user.email;
+          userInfo.style.display = 'flex';
+          authButtons.style.display = 'none';
+          authGate.style.display = 'none';
+          uploadZone.style.display = 'block';
+        } else {
+          userInfo.style.display = 'none';
+          authButtons.style.display = 'block';
+          authGate.style.display = 'block';
+          uploadZone.style.display = 'none';
+        }
+      })
+      .catch(() => {
+        userInfo.style.display = 'none';
+        authButtons.style.display = 'block';
+        authGate.style.display = 'block';
+        uploadZone.style.display = 'none';
+      });
   </script>
 </body>
 </html>
