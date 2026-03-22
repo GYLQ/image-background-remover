@@ -69,9 +69,11 @@ export async function onRequestGet(context) {
     const googleId = userInfo.sub || sessionId;
 
     // Store or update user in D1
+    console.log('Callback: DB available:', !!DB, 'googleId:', googleId, 'email:', userInfo.email);
     if (DB) {
       // Check if user already exists by google_id
       const existing = await DB.prepare('SELECT id, credits FROM users WHERE google_id = ?').bind(googleId).first();
+      console.log('Callback: existing user:', existing ? 'yes (id=' + existing.id + ')' : 'no');
       if (existing) {
         // Returning user - update info, keep existing credits
         await DB.prepare('UPDATE users SET email = ?, name = ?, picture = ?, last_login = ? WHERE google_id = ?')
@@ -82,7 +84,10 @@ export async function onRequestGet(context) {
         await DB.prepare('INSERT INTO users (id, google_id, email, name, picture, credits, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
           .bind(sessionId, googleId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', 3, Date.now(), Date.now())
           .run();
+        console.log('Callback: INSERTED new user with 3 credits');
       }
+    } else {
+      console.log('Callback: DB is NOT available!');
     }
 
     // Create session data for cookie (store email as identifier)
