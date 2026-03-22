@@ -64,30 +64,32 @@ export async function onRequestGet(context) {
       });
     }
 
-    // Generate session ID (used as user ID)
-    const sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-    const googleId = userInfo.sub || sessionId;
+    // Check if user already exists by google_id
+    const googleId = userInfo.sub || '';
+    let sessionId;
 
-    // Store or update user in D1
     console.log('Callback: DB available:', !!DB, 'googleId:', googleId, 'email:', userInfo.email);
-    if (DB) {
-      // Check if user already exists by google_id
+    if (DB && googleId) {
       const existing = await DB.prepare('SELECT id, credits FROM users WHERE google_id = ?').bind(googleId).first();
-      console.log('Callback: existing user:', existing ? 'yes (id=' + existing.id + ')' : 'no');
+      console.log('Callback: existing user:', existing ? 'yes (id=' + existing.id + ', credits=' + existing.credits + ')' : 'no');
       if (existing) {
-        // Returning user - update info, keep existing credits
+        // Returning user - update info, keep existing credits, USE EXISTING ID
+        sessionId = existing.id;
         await DB.prepare('UPDATE users SET email = ?, name = ?, picture = ?, last_login = ? WHERE google_id = ?')
           .bind(userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', Date.now(), googleId)
           .run();
       } else {
-        // New user - INSERT with 3 credits
+        // New user - generate new ID and INSERT with 3 credits
+        sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
         await DB.prepare('INSERT INTO users (id, google_id, email, name, picture, credits, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
           .bind(sessionId, googleId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', 3, Date.now(), Date.now())
           .run();
-        console.log('Callback: INSERTED new user with 3 credits');
+        console.log('Callback: INSERTED new user with 3 credits, id=', sessionId);
       }
     } else {
-      console.log('Callback: DB is NOT available!');
+      // Fallback: generate session ID
+      sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      console.log('Callback: DB not available or no googleId, using generated sessionId');
     }
 
     // Create session data for cookie (store email as identifier)
