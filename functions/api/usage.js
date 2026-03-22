@@ -39,14 +39,14 @@ export async function onRequest(context) {
   try {
     // Today's usage
     const todayRows = await env.DB.prepare(
-      "SELECT COUNT(*) as count FROM credit_usage WHERE user_id = ? AND action = 'remove_bg' AND date(created_at/1000, 'unixepoch') = ?"
+      "SELECT COUNT(*) as count FROM credit_usage WHERE user_id = ? AND action = 'remove_bg' AND datetime(created_at/1000, 'unixepoch') = ?"
     ).bind(userId, today).all();
 
     const todayCount = todayRows.results?.[0]?.count ?? 0;
 
     // This month's usage
     const monthRows = await env.DB.prepare(
-      "SELECT COUNT(*) as count FROM credit_usage WHERE user_id = ? AND action = 'remove_bg' AND date(created_at/1000, 'unixepoch') >= ?"
+      "SELECT COUNT(*) as count FROM credit_usage WHERE user_id = ? AND action = 'remove_bg' AND datetime(created_at/1000, 'unixepoch') >= ?"
     ).bind(userId, monthStart).all();
 
     const monthCount = monthRows.results?.[0]?.count ?? 0;

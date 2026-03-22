@@ -87,7 +87,7 @@
   <div id="upgradeModal" class="upgrade-modal">
     <div class="upgrade-modal-content">
       <h2 id="upgradeTitle">积分不足</h2>
-      <p id="upgradeDesc">您今天的免费次数已用完。登录后可获得更多积分，或购买积分包继续使用。</p>
+      <p id="upgradeDesc">登录后注册即送3积分，用完后需购买积分包继续使用。</p>
       <div class="pricing">
         <div class="upgrade-plan" onclick="showUpgradeInfo('basic')">
           <h4>基础版</h4>
@@ -102,7 +102,7 @@
       </div>
       <div class="btn-group">
         <button class="btn btn-outline" onclick="closeUpgradeModal()">稍后再说</button>
-        <button class="btn btn-primary" onclick="showUpgradeInfo()">了解详情</button>
+        <button class="btn btn-primary" onclick="window.location.href='/auth/login'">立即登录</button>
       </div>
     </div>
   </div>
@@ -201,6 +201,10 @@
     }
 
     function updateCreditBadge(data) {
+      if (!data.isLoggedIn) {
+        document.getElementById('creditBadge').style.display = 'none';
+        return;
+      }
       const badge = document.getElementById('creditBadge');
       const count = document.getElementById('creditCount');
       badge.style.display = 'inline-flex';
@@ -239,9 +243,15 @@
     }
 
     async function uploadImage(file) {
+      // Check login first
+      if (!currentUser) {
+        showUpgradeModal('请先登录', '登录后才能使用去背景功能，注册即送3积分。');
+        return;
+      }
+
       // Check credits before upload
       if (remainingCredits !== null && remainingCredits <= 0) {
-        showUpgradeModal('积分不足', '您的积分已用完，请升级或购买积分包。');
+        showUpgradeModal('积分不足', '您的积分已用完，请购买积分包继续使用。');
         return;
       }
 
@@ -270,13 +280,20 @@
           }
         }
 
+        if (res.status === 401) {
+          const data = await res.json();
+          hideLoading();
+          if (data.error === 'login_required') {
+            showUpgradeModal('请先登录', '登录后才能使用去背景功能，注册即送3积分。');
+          }
+          return;
+        }
+
         if (res.status === 402) {
           const data = await res.json();
           hideLoading();
           if (data.error === 'no_credits') {
-            showUpgradeModal('积分不足', '您的积分已用完，请升级或购买积分包。');
-          } else if (data.error === 'daily_limit') {
-            showUpgradeModal('今日次数用完', '未登录用户每天可免费使用3次。登录获取更多积分。');
+            showUpgradeModal('积分不足', '您的积分已用完，请购买积分包继续使用。');
           }
           return;
         }

@@ -181,7 +181,7 @@
       try {
         const [userRes, creditsRes] = await Promise.all([
           fetch('/auth/user'),
-          fetch('/functions/api/credits')
+          fetch('/api/credits')
         ]);
         const userData = await userRes.json();
         const creditsData = await creditsRes.json();
@@ -232,7 +232,7 @@
       // Today's usage
       const today = new Date().toISOString().slice(0, 10);
       try {
-        const res = await fetch(`/functions/api/usage?userId=${encodeURIComponent(userId)}&date=${today}`);
+        const res = await fetch(`/api/usage?userId=${encodeURIComponent(userId)}&date=${today}`);
         const data = await res.json();
         document.getElementById('statToday').textContent = data.today ?? 0;
         document.getElementById('statMonth').textContent = data.month ?? 0;

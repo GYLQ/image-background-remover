@@ -43,13 +43,21 @@ export async function onRequestPost(context) {
     const ipHash = await hashIP(clientIP);
     const today = new Date().toISOString().slice(0, 10);
 
-    // === CREDIT CHECK ===
+    // === REQUIRE LOGIN ===
     const sessionUser = await verifySession(context);
+    if (!sessionUser) {
+      return jsonResp({
+        error: 'login_required',
+        message: '请先登录后再使用',
+        remaining: 0
+      }, 401);
+    }
+
     const DB = env.DB;
     const REMOVE_BG_API_KEY = env.REMOVE_BG_API_KEY;
 
-    if (sessionUser && DB) {
-      // Logged-in user: check credits
+    // === CREDIT CHECK ===
+    if (DB) {
       const user = await DB.prepare(
         'SELECT credits, plan_type FROM users WHERE id = ?'
       ).bind(sessionUser.id).first();
@@ -63,24 +71,9 @@ export async function onRequestPost(context) {
       if (credits <= 0) {
         return jsonResp({
           error: 'no_credits',
-          message: '积分不足，请升级或购买积分包',
+          message: '积分不足，请购买积分包',
           remaining: 0,
           type: user.plan_type || 'free'
-        }, 402);
-      }
-    } else if (DB) {
-      // Anonymous user: 3 uses per day via IP hash
-      const record = await DB.prepare(
-        'SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?'
-      ).bind(ipHash, today).first();
-      const uses = record?.uses ?? 0;
-
-      if (uses >= 3) {
-        return jsonResp({
-          error: 'daily_limit',
-          message: '今日免费次数已用完（3次/天），请登录获取更多积分',
-          remaining: 0,
-          type: 'anonymous'
         }, 402);
       }
     }
@@ -123,28 +116,12 @@ export async function onRequestPost(context) {
     const resultBuffer = await response.arrayBuffer();
 
     // === DEDUCT CREDITS ===
-    if (DB) {
-      if (sessionUser) {
-        await DB.prepare('UPDATE users SET credits = credits - 1 WHERE id = ?')
-          .bind(sessionUser.id).run();
-        await DB.prepare(
-          'INSERT INTO credit_usage (id, user_id, credits, action, file_size, created_at) VALUES (?, ?, 1, ?, ?, ?)'
-        ).bind(generateId(), sessionUser.id, 'remove_bg', imageFile.size, Date.now()).run();
-      } else {
-        const existing = await DB.prepare(
-          'SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?'
-        ).bind(ipHash, today).first();
-        if (existing) {
-          await DB.prepare('UPDATE ip_daily_usage SET uses = uses + 1 WHERE ip_hash = ? AND date = ?')
-            .bind(ipHash, today).run();
-        } else {
-          await DB.prepare('INSERT INTO ip_daily_usage (ip_hash, date, uses) VALUES (?, ?, 1)')
-            .bind(ipHash, today).run();
-        }
-        await DB.prepare(
-          'INSERT INTO credit_usage (id, ip_hash, credits, action, file_size, created_at) VALUES (?, ?, 1, ?, ?, ?)'
-        ).bind(generateId(), ipHash, 'remove_bg', imageFile.size, Date.now()).run();
-      }
+    if (DB && sessionUser) {
+      await DB.prepare('UPDATE users SET credits = credits - 1 WHERE id = ?')
+        .bind(sessionUser.id).run();
+      await DB.prepare(
+        'INSERT INTO credit_usage (id, user_id, credits, action, file_size, created_at) VALUES (?, ?, 1, ?, ?, ?)'
+      ).bind(generateId(), sessionUser.id, 'remove_bg', imageFile.size, Date.now()).run();
     }
 
     // === RETURN RESULT ===
@@ -153,17 +130,10 @@ export async function onRequestPost(context) {
       : 'image/png';
 
     let remaining = null;
-    if (DB) {
-      if (sessionUser) {
-        const user = await DB.prepare('SELECT credits FROM users WHERE id = ?')
-          .bind(sessionUser.id).first();
-        remaining = user?.credits ?? 0;
-      } else {
-        const record = await DB.prepare(
-          'SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?'
-        ).bind(ipHash, today).first();
-        remaining = Math.max(0, 3 - (record?.uses ?? 0));
-      }
+    if (DB && sessionUser) {
+      const user = await DB.prepare('SELECT credits FROM users WHERE id = ?')
+        .bind(sessionUser.id).first();
+      remaining = user?.credits ?? 0;
     }
 
     return new Response(resultBuffer, {
