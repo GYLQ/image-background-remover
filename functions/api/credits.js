@@ -17,15 +17,19 @@ export async function onRequest(context) {
     }
 
     try {
+      console.log('credits.js: user.id =', user.id, 'email =', user.email);
       const result = await env.DB.prepare(
-        'SELECT credits FROM users WHERE id = ?'
+        'SELECT id, email, credits FROM users WHERE id = ?'
       ).bind(user.id).first();
+      console.log('credits.js: DB result =', JSON.stringify(result));
       return json({
         credits: result?.credits ?? 0,
         isLoggedIn: true,
-        user: { name: user.name, email: user.email, picture: user.picture }
+        user: { name: user.name, email: user.email, picture: user.picture },
+        debug: { queriedId: user.id, dbId: result?.id, dbCredits: result?.credits }
       });
     } catch (e) {
+      console.error('credits.js error:', e.message);
       return json({ credits: 0, isLoggedIn: false, error: e.message });
     }
   }
