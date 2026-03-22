@@ -2,7 +2,7 @@ export async function onRequestGet(context) {
   try {
     const url = new URL(context.request.url);
     const code = url.searchParams.get('code');
-    const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = context.env;
+    const { DB, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = context.env;
 
     if (!code) {
       return new Response(JSON.stringify({ error: 'No code provided' }), {
@@ -12,7 +12,7 @@ export async function onRequestGet(context) {
     }
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      return new Response(JSON.stringify({ error: 'OAuth config missing', hasClientId: !!GOOGLE_CLIENT_ID }), {
+      return new Response(JSON.stringify({ error: 'OAuth config missing' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -45,7 +45,7 @@ export async function onRequestGet(context) {
     const accessToken = tokens.access_token;
 
     if (!accessToken) {
-      return new Response(JSON.stringify({ error: 'No access token', tokens }), {
+      return new Response(JSON.stringify({ error: 'No access token' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -58,15 +58,32 @@ export async function onRequestGet(context) {
     const userInfo = await userRes.json();
 
     if (!userInfo.email) {
-      return new Response(JSON.stringify({ error: 'No email in user info', userInfo }), {
+      return new Response(JSON.stringify({ error: 'No email in user info' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // Create session data - use encodeURIComponent to handle Unicode
+    // Generate session ID
+    const sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+
+    // Store or update user in D1
+    if (DB) {
+      const existing = await DB.prepare('SELECT id FROM users WHERE email = ?').bind(userInfo.email).first();
+      if (existing) {
+        await DB.prepare('UPDATE users SET name = ?, image = ?, session_id = ? WHERE email = ?')
+          .bind(userInfo.name || userInfo.email, userInfo.picture || '', sessionId, userInfo.email)
+          .run();
+      } else {
+        await DB.prepare('INSERT INTO users (id, email, name, image, session_id, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+          .bind(sessionId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', sessionId, Date.now())
+          .run();
+      }
+    }
+
+    // Create session data for cookie
     const sessionData = {
-      id: userInfo.sub || Math.random().toString(36).slice(2),
+      id: sessionId,
       email: userInfo.email,
       name: userInfo.name || userInfo.email,
       picture: userInfo.picture || '',
@@ -83,10 +100,7 @@ export async function onRequestGet(context) {
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ 
-      error: 'Internal error', 
-      message: err.message || String(err),
-    }), {
+    return new Response(JSON.stringify({ error: 'Internal error', message: err.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
