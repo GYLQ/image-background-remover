@@ -1,5 +1,5 @@
-export async function onRequestGet() {
-  const cookie = `session_id=; HttpOnly; Path=/; Max-Age=0`;
+export async function onRequestGet(context) {
+  const cookie = `session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`;
   return new Response(null, {
     status: 302,
     headers: { Location: '/', 'Set-Cookie': cookie },
