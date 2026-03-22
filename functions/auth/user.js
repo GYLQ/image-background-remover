@@ -18,11 +18,12 @@ export async function onRequestGet(context) {
       });
     }
 
-    // Try to get fresh data from D1 (schema uses: id, google_id, email, name, picture)
+    // Try to get fresh data from D1 (try both column names for compatibility)
     const { DB } = context.env;
     if (DB && sessionData.email) {
       try {
-        const user = await DB.prepare('SELECT id, email, name, picture FROM users WHERE email = ?')
+        // Try with picture column first (new schema)
+        let user = await DB.prepare('SELECT id, email, name, picture FROM users WHERE email = ?')
           .bind(sessionData.email)
           .first();
         if (user) {
@@ -31,7 +32,19 @@ export async function onRequestGet(context) {
           });
         }
       } catch (e) {
-        // D1 error, fall back to cookie data
+        // If picture column fails, try image column (old schema)
+        try {
+          const user = await DB.prepare('SELECT id, email, name, image FROM users WHERE email = ?')
+            .bind(sessionData.email)
+            .first();
+          if (user) {
+            return new Response(JSON.stringify({ user }), {
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+        } catch (e2) {
+          // Both failed, fall back to cookie
+        }
       }
     }
 
