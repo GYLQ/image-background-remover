@@ -18,16 +18,20 @@ export async function onRequestGet(context) {
       });
     }
 
-    // Try to get fresh data from D1
+    // Try to get fresh data from D1 (schema uses: id, google_id, email, name, picture)
     const { DB } = context.env;
     if (DB && sessionData.email) {
-      const user = await DB.prepare('SELECT id, email, name, image FROM users WHERE email = ?')
-        .bind(sessionData.email)
-        .first();
-      if (user) {
-        return new Response(JSON.stringify({ user }), {
-          headers: { 'Content-Type': 'application/json' },
-        });
+      try {
+        const user = await DB.prepare('SELECT id, email, name, picture FROM users WHERE email = ?')
+          .bind(sessionData.email)
+          .first();
+        if (user) {
+          return new Response(JSON.stringify({ user: { ...user, image: user.picture } }), {
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+      } catch (e) {
+        // D1 error, fall back to cookie data
       }
     }
 
