@@ -191,7 +191,7 @@
     // === CREDIT CHECK ===
     async function checkCredits() {
       try {
-        const res = await fetch('/functions/api/credits');
+        const res = await fetch('/api/credits');
         const data = await res.json();
         remainingCredits = data.credits;
         updateCreditBadge(data);
@@ -262,7 +262,7 @@
       formData.append('format', 'png');
 
       try {
-        const res = await fetch('/functions/api/remove-bg', {
+        const res = await fetch('/api/remove-bg', {
           method: 'POST',
           body: formData,
         });
