@@ -67,21 +67,21 @@ export async function onRequestGet(context) {
     // Generate session ID
     const sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
 
-    // Store or update user in D1
+    // Store or update user in D1 (matching actual schema: id, google_id, email, name, picture, created_at, last_login)
     if (DB) {
       const existing = await DB.prepare('SELECT id FROM users WHERE email = ?').bind(userInfo.email).first();
       if (existing) {
-        await DB.prepare('UPDATE users SET name = ?, image = ?, session_id = ? WHERE email = ?')
-          .bind(userInfo.name || userInfo.email, userInfo.picture || '', sessionId, userInfo.email)
+        await DB.prepare('UPDATE users SET name = ?, picture = ?, last_login = ? WHERE email = ?')
+          .bind(userInfo.name || userInfo.email, userInfo.picture || '', Date.now(), userInfo.email)
           .run();
       } else {
-        await DB.prepare('INSERT INTO users (id, email, name, image, session_id, created_at) VALUES (?, ?, ?, ?, ?, ?)')
-          .bind(sessionId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', sessionId, Date.now())
+        await DB.prepare('INSERT INTO users (id, google_id, email, name, picture, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?)')
+          .bind(sessionId, userInfo.sub || sessionId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', Date.now(), Date.now())
           .run();
       }
     }
 
-    // Create session data for cookie
+    // Create session data for cookie (store email as identifier)
     const sessionData = {
       id: sessionId,
       email: userInfo.email,
