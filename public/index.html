@@ -87,22 +87,27 @@
   <div id="upgradeModal" class="upgrade-modal">
     <div class="upgrade-modal-content">
       <h2 id="upgradeTitle">积分不足</h2>
-      <p id="upgradeDesc">登录后注册即送3积分，用完后需购买积分包继续使用。</p>
+      <p id="upgradeDesc">您的积分已用完，请购买积分包继续使用。注册即送 3 积分。</p>
       <div class="pricing">
-        <div class="upgrade-plan" onclick="showUpgradeInfo('basic')">
-          <h4>基础版</h4>
-          <div class="price">¥9.9<span>/月</span></div>
-          <div class="credits">100积分/月</div>
+        <div class="upgrade-plan" onclick="window.location.href='/pricing'">
+          <h4>体验包</h4>
+          <div class="price">¥6</div>
+          <div class="credits">30积分</div>
         </div>
-        <div class="upgrade-plan popular" onclick="showUpgradeInfo('pro')">
-          <h4>专业版</h4>
-          <div class="price">¥29<span>/月</span></div>
-          <div class="credits">400积分/月</div>
+        <div class="upgrade-plan popular" onclick="window.location.href='/pricing'">
+          <h4>超值包</h4>
+          <div class="price">¥30</div>
+          <div class="credits">200积分</div>
+        </div>
+        <div class="upgrade-plan" onclick="window.location.href='/pricing'">
+          <h4>畅用包</h4>
+          <div class="price">¥100</div>
+          <div class="credits">1000积分</div>
         </div>
       </div>
       <div class="btn-group">
         <button class="btn btn-outline" onclick="closeUpgradeModal()">稍后再说</button>
-        <button class="btn btn-primary" onclick="window.location.href='/auth/login'">立即登录</button>
+        <button class="btn btn-primary" onclick="window.location.href='/pricing'">查看全部</button>
       </div>
     </div>
   </div>
