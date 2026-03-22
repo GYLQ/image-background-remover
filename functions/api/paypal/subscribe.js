@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
   let accessToken;
   try {
     const creds = btoa(`${CLIENT_ID}:${SECRET}`);
-    const tokenRes = await fetch('https://api-m.paypal.com/v1/oauth2/token', {
+    const tokenRes = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${creds}`,
@@ -95,7 +95,7 @@ export async function onRequestPost(context) {
 
   let subRes;
   try {
-    subRes = await fetch('https://api-m.paypal.com/v1/billing/subscriptions', {
+    subRes = await fetch('https://api-m.sandbox.paypal.com/v1/billing/subscriptions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
