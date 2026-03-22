@@ -45,7 +45,7 @@
     .plan-card.popular .plan-btn:hover { background: #4338ca; border-color: #4338ca; }
 
     /* Pack cards (2 columns) */
-    .pack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 48px; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px; max-width: 720px; margin-left: auto; margin-right: auto; }
     .pack-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 20px; padding: 28px 24px; position: relative; transition: all 0.2s; cursor: pointer; }
     .pack-card:hover { border-color: #a5b4fc; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.1); }
     .pack-card .pack-label { font-size: 11px; font-weight: 700; color: #fff; background: #4f46e5; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-bottom: 10px; }
@@ -167,7 +167,7 @@
           <button class="pack-btn" onclick="handleBuy('value')">立即购买</button>
         </div>
 
-        <div class="pack-card" style="grid-column:1/-1;max-width:320px;margin:0 auto;">
+        <div class="pack-card">
           <div class="pack-label hot">大额</div>
           <div class="pack-name">畅用包</div>
           <div class="pack-desc">用得越多越划算</div>
