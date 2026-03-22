@@ -75,8 +75,8 @@ export async function onRequestGet(context) {
           .bind(userInfo.name || userInfo.email, userInfo.picture || '', Date.now(), userInfo.email)
           .run();
       } else {
-        await DB.prepare('INSERT INTO users (id, google_id, email, name, picture, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?)')
-          .bind(sessionId, userInfo.sub || sessionId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', Date.now(), Date.now())
+        await DB.prepare('INSERT INTO users (id, google_id, email, name, picture, credits, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+          .bind(sessionId, userInfo.sub || sessionId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', 3, Date.now(), Date.now())
           .run();
       }
     }
