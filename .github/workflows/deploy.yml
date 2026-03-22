@@ -16,16 +16,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Wrangler
-        run: npm install -g wrangler
+      - name: Prepare Functions directory
+        run: |
+          mkdir -p .cloudflare
+          cp -r public/* .cloudflare/
+          cp -r functions .cloudflare/
 
       - name: Deploy to Cloudflare Pages
-        run: wrangler pages deploy . --project-name=bg-remover
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: bg-remover
+          directory: .cloudflare
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
