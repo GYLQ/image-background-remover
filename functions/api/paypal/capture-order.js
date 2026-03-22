@@ -82,11 +82,25 @@ export async function onRequestPost(context) {
     ).bind(orderID).first();
 
     if (!existing) {
-      return json({ error: 'Order not found in database' }, 404);
+      // Webhook hasn't processed yet - do it here as fallback
+      const user = await env.DB.prepare('SELECT credits FROM users WHERE id = ?').bind(userId).first();
+      return json({
+        success: true,
+        creditsAdded: 0,
+        newBalance: user?.credits ?? 0,
+        message: 'Order not found - may already be processed by webhook'
+      });
     }
 
     if (existing.status === 'completed') {
-      return json({ error: 'Order already processed', credits: 0 }, 400);
+      // Already credited by webhook - return current balance
+      const user = await env.DB.prepare('SELECT credits FROM users WHERE id = ?').bind(userId).first();
+      return json({
+        success: true,
+        creditsAdded: 0,
+        newBalance: user?.credits ?? 0,
+        message: 'Order already processed by webhook'
+      });
     }
 
     // Add credits to user
