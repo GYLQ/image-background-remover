@@ -39,6 +39,8 @@
     .plan-features li { font-size: 14px; color: #374151; padding: 5px 0; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
     .plan-features li .check { color: #4f46e5; font-weight: 700; flex-shrink: 0; }
     .paypal-btn-wrap { min-height: 46px; margin-top: auto; }
+    .sub-btn { width: 100%; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: 2px solid #4f46e5; background: #4f46e5; color: #fff; transition: all 0.2s; height: 46px; }
+    .sub-btn:hover { background: #4338ca; border-color: #4338ca; }
 
     .pack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px; max-width: 720px; margin-left: auto; margin-right: auto; }
     .pack-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 20px; padding: 28px 24px; position: relative; transition: all 0.2s; display: flex; flex-direction: column; }
@@ -196,7 +198,9 @@
             <li><span class="check">✓</span> 无水印输出</li>
             <li><span class="check">✓</span> 4K 下载</li>
           </ul>
-          <div class="paypal-btn-wrap" id="paypal-btn-basic"></div>
+          <div class="paypal-btn-wrap">
+            <button class="sub-btn" onclick="subscribeWithPayPal('basic')">订阅 · $1.35/月</button>
+          </div>
         </div>
 
         <div class="plan-card popular">
@@ -215,7 +219,9 @@
             <li><span class="check">✓</span> 优先处理</li>
             <li><span class="check">✓</span> API 访问（即将）</li>
           </ul>
-          <div class="paypal-btn-wrap" id="paypal-btn-pro"></div>
+          <div class="paypal-btn-wrap">
+            <button class="sub-btn" onclick="subscribeWithPayPal('pro')">订阅 · $3.95/月</button>
+          </div>
         </div>
 
         <div class="plan-card">
@@ -233,7 +239,9 @@
             <li><span class="check">✓</span> 最高优先级</li>
             <li><span class="check">✓</span> 完整 API 访问</li>
           </ul>
-          <div class="paypal-btn-wrap" id="paypal-btn-team"></div>
+          <div class="paypal-btn-wrap">
+            <button class="sub-btn" onclick="subscribeWithPayPal('team')">订阅 · $13.50/月</button>
+          </div>
         </div>
       </div>
     </div>
@@ -388,30 +396,12 @@
       }
     }
 
-    // ── PAYPAL SUBSCRIPTION BUTTONS ──
-    function renderPayPalSubButton(planId) {
-      paypal.Buttons({
-        style: { layout: 'vertical', color: 'black', shape: 'rect', label: 'subscribe', height: 44 },
-        createSubscription: function(data, actions) {
-          if (!currentUser) {
-            window.location.href = '/auth/login?redirect=/pricing';
-            return null;
-          }
-          return createSubOrder(planId).then(subId => {
-            if (!subId) return null;
-            return subId;
-          }).catch(() => null);
-        },
-        onApprove: function(data, actions) {
-          window.location.href = '/profile?subscription=pending&sub=' + data.subscriptionID;
-        },
-        onError: function(err) {
-          alert('订阅错误: ' + err);
-        },
-      }).render('#paypal-btn-' + planId);
-    }
-
-    async function createSubOrder(planId) {
+    // ── PAYPAL SUBSCRIPTION BUTTONS (custom redirect approach) ──
+    async function subscribeWithPayPal(planId) {
+      if (!currentUser) {
+        window.location.href = '/auth/login?redirect=/pricing';
+        return;
+      }
       try {
         const res = await fetch('/api/paypal/create-subscription', {
           method: 'POST',
@@ -419,15 +409,17 @@
           body: JSON.stringify({ planId, userId: currentUser.id }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Subscription creation failed');
+        if (!res.ok) {
+          alert('订阅功能配置中，请稍后再试：' + (data.error || 'Unknown error'));
+          return;
+        }
         if (data.approvalURL) {
           window.location.href = data.approvalURL;
-          return null;
+        } else {
+          alert('订阅创建失败，请稍后再试');
         }
-        return data.subscriptionID;
       } catch (e) {
-        alert('创建订阅失败: ' + e.message);
-        return null;
+        alert('订阅错误: ' + e.message);
       }
     }
 
@@ -436,9 +428,7 @@
       renderPayPalPackButton('starter');
       renderPayPalPackButton('value');
       renderPayPalPackButton('bulk');
-      renderPayPalSubButton('basic');
-      renderPayPalSubButton('pro');
-      renderPayPalSubButton('team');
+      // Subscription buttons use custom onclick handlers (see HTML)
     }
 
     init();

@@ -1,6 +1,6 @@
 // POST /api/paypal/create-subscription
 // Body: { planId: 'basic'|'pro'|'team', userId: string }
-// Returns: { subscriptionID: string }
+// Returns: { approvalURL: string }
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -21,11 +21,11 @@ export async function onRequestPost(context) {
     return json({ error: 'planId and userId required' }, 400);
   }
 
-  // Monthly plan definitions (amount in USD)
+  // Monthly plan definitions (USD amounts)
   const PLANS = {
-    basic: { name: '基础版', credits: 60, usd: '9.90' },
-    pro:   { name: '专业版', credits: 200, usd: '29.00' },
-    team:  { name: '团队版', credits: 800, usd: '99.00' },
+    basic: { name: 'BG Remover Basic', credits: 60, usd: '1.35', planId: 'BGREMOVER_BASIC' },
+    pro:   { name: 'BG Remover Pro', credits: 200, usd: '3.95', planId: 'BGREMOVER_PRO' },
+    team:  { name: 'BG Remover Team', credits: 800, usd: '13.50', planId: 'BGREMOVER_TEAM' },
   };
 
   const plan = PLANS[planId];
@@ -71,25 +71,26 @@ export async function onRequestPost(context) {
     return json({ error: 'PayPal network error', detail: e.message }, 502);
   }
 
-  // Create PayPal subscription
-  const subscription = {
-    intent: 'BILLING_AGREEMENT',
+  // Create subscription with PayPal
+  // Note: plan must exist in PayPal sandbox OR we use inline plan creation
+  const subBody = {
+    intent: 'SUBSCRIBE',
     subscriber: {
-      name: {
-        given_name: user.name?.split(' ')[0] || user.email.split('@')[0],
-        surname: user.name?.split(' ').slice(1).join(' ') || '',
-      },
       email_address: user.email,
+      name: {
+        given_name: (user.name || user.email || 'User').split(' ')[0],
+        surname: (user.name || '').split(' ').slice(1).join(' ') || 'User',
+      },
     },
     plan: {
-      plan_id: `BGREMOVER_${planId.toUpperCase()}`,
+      plan_id: plan.planId,
     },
     application_context: {
       brand_name: 'BG Remover',
       landing_page: 'NO_PREFERENCE',
       user_action: 'SUBSCRIBE_NOW',
-      return_url: `${new URL(request.url).origin}/profile?subscription=success`,
-      cancel_url: `${new URL(request.url).origin}/pricing?subscription=cancelled`,
+      return_url: `${new URL(request.url).origin}/profile`,
+      cancel_url: `${new URL(request.url).origin}/pricing`,
     },
   };
 
@@ -102,12 +103,13 @@ export async function onRequestPost(context) {
         'Content-Type': 'application/json',
         'PayPal-Request-Id': `sub_${Date.now()}_${userId}`,
       },
-      body: JSON.stringify(subscription),
+      body: JSON.stringify(subBody),
     });
     const subData = await subRes.json();
 
     if (!subRes.ok) {
-      return json({ error: 'PayPal subscription creation failed', detail: subData }, 502);
+      console.error('PayPal subscription error:', JSON.stringify(subData));
+      return json({ error: 'Subscription creation failed', detail: subData }, 502);
     }
 
     // Store subscription in D1
@@ -121,13 +123,18 @@ export async function onRequestPost(context) {
 
     // Find approval URL
     const approvalLink = subData.links?.find(l => l.rel === 'approve');
+    if (!approvalLink) {
+      return json({ error: 'No approval URL returned', detail: subData }, 502);
+    }
+
     return json({
       subscriptionID: subData.id,
       status: subData.status,
-      approvalURL: approvalLink?.href,
+      approvalURL: approvalLink.href,
     });
 
   } catch (e) {
+    console.error('Subscription request exception:', e.message);
     return json({ error: 'Subscription request failed', detail: e.message }, 502);
   }
 }
