@@ -1,6 +1,7 @@
 // POST /api/paypal/capture-order
 // Body: { orderID: string, userId: string, packId: string }
 // Captures the PayPal order and adds credits to user
+// Primary credit mechanism (not webhook-dependent)
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -50,78 +51,76 @@ export async function onRequestPost(context) {
       body: 'grant_type=client_credentials',
     });
     const tokenData = await tokenRes.json();
+    if (!tokenRes.ok) {
+      return json({ error: 'PayPal auth failed', detail: tokenData.error_description }, 502);
+    }
     accessToken = tokenData.access_token;
   } catch (e) {
-    return json({ error: 'PayPal auth failed', detail: e.message }, 502);
+    return json({ error: 'PayPal network error', detail: e.message }, 502);
   }
 
-  // Capture the order
-  let captureRes;
+  // Verify order status with PayPal
+  let orderStatus;
   try {
-    captureRes = await fetch(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderID}/capture`, {
-      method: 'POST',
+    const verifyRes = await fetch(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderID}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'PayPal-Request-Id': `capture_${Date.now()}_${userId}`,
+        'PayPal-Request-Id': `verify_${Date.now()}_${userId}`,
       },
     });
-    const captureData = await captureRes.json();
-
-    if (!captureRes.ok) {
-      return json({ error: 'PayPal capture failed', detail: captureData }, 502);
+    const orderData = await verifyRes.json();
+    if (!verifyRes.ok) {
+      return json({ error: 'Failed to verify order', detail: orderData }, 502);
     }
+    orderStatus = orderData.status;
+    console.log(`Order ${orderID} status: ${orderStatus}`);
+  } catch (e) {
+    return json({ error: 'Failed to verify order', detail: e.message }, 502);
+  }
 
-    if (captureData.status !== 'COMPLETED') {
-      return json({ error: 'Order not completed', status: captureData.status }, 400);
-    }
+  // Check if already processed
+  const existing = await env.DB.prepare(
+    'SELECT status FROM paypal_orders WHERE order_id = ?'
+  ).bind(orderID).first();
 
-    // Check if already processed
-    const existing = await env.DB.prepare(
-      'SELECT status FROM paypal_orders WHERE order_id = ?'
-    ).bind(orderID).first();
+  if (existing?.status === 'completed') {
+    // Already credited - return current balance
+    const user = await env.DB.prepare(
+      'SELECT credits FROM users WHERE id = ?'
+    ).bind(userId).first();
+    return json({
+      success: true,
+      creditsAdded: 0,
+      newBalance: user?.credits ?? 0,
+      message: 'Already credited'
+    });
+  }
 
-    if (!existing) {
-      // Webhook hasn't processed yet - do it here as fallback
-      const user = await env.DB.prepare('SELECT credits FROM users WHERE id = ?').bind(userId).first();
-      return json({
-        success: true,
-        creditsAdded: 0,
-        newBalance: user?.credits ?? 0,
-        message: 'Order not found - may already be processed by webhook'
-      });
-    }
-
-    if (existing.status === 'completed') {
-      // Already credited by webhook - return current balance
-      const user = await env.DB.prepare('SELECT credits FROM users WHERE id = ?').bind(userId).first();
-      return json({
-        success: true,
-        creditsAdded: 0,
-        newBalance: user?.credits ?? 0,
-        message: 'Order already processed by webhook'
-      });
-    }
-
-    // Add credits to user
+  // Only capture if PayPal shows COMPLETED or APPROVED
+  if (orderStatus === 'COMPLETED' || orderStatus === 'APPROVED') {
+    // Add credits
     await env.DB.prepare(
       'UPDATE users SET credits = credits + ? WHERE id = ?'
     ).bind(pack.credits, userId).run();
 
     // Log usage
+    const logId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
     await env.DB.prepare(
       'INSERT INTO credit_usage (id, user_id, credits, action, file_size, created_at) VALUES (?, ?, ?, ?, ?, ?)'
-    ).bind(
-      crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
-      userId, pack.credits, `paypal_${packId}`, 0, Date.now()
-    ).run();
+    ).bind(logId, userId, pack.credits, `paypal_${packId}`, 0, Date.now()).run();
 
-    // Update order status
-    await env.DB.prepare(
-      'UPDATE paypal_orders SET status = ?, updated_at = ? WHERE order_id = ?'
-    ).bind('completed', Date.now(), orderID).run();
+    // Update or insert order record
+    if (existing) {
+      await env.DB.prepare(
+        'UPDATE paypal_orders SET status = ?, updated_at = ? WHERE order_id = ?'
+      ).bind('completed', Date.now(), orderID).run();
+    } else {
+      await env.DB.prepare(
+        'INSERT INTO paypal_orders (order_id, user_id, pack_id, credits, amount_usd, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+      ).bind(orderID, userId, packId, pack.credits, PACKS[packId]?.credits_usd || '0', 'completed', Date.now()).run();
+    }
 
-    // Get updated credit balance
+    // Get updated balance
     const user = await env.DB.prepare(
       'SELECT credits FROM users WHERE id = ?'
     ).bind(userId).first();
@@ -130,12 +129,15 @@ export async function onRequestPost(context) {
       success: true,
       creditsAdded: pack.credits,
       newBalance: user?.credits ?? 0,
-      transactionId: captureData.purchase_units?.[0]?.payments?.captures?.[0]?.id,
+      orderStatus: orderStatus
     });
-
-  } catch (e) {
-    return json({ error: 'Capture failed', detail: e.message }, 502);
   }
+
+  return json({
+    success: false,
+    error: 'Order not completed',
+    orderStatus: orderStatus
+  }, 400);
 }
 
 function json(data, status = 200) {

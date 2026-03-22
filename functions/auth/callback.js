@@ -64,19 +64,23 @@ export async function onRequestGet(context) {
       });
     }
 
-    // Generate session ID
+    // Generate session ID (used as user ID)
     const sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    const googleId = userInfo.sub || sessionId;
 
-    // Store or update user in D1 (matching actual schema: id, google_id, email, name, picture, created_at, last_login)
+    // Store or update user in D1
     if (DB) {
-      const existing = await DB.prepare('SELECT id FROM users WHERE email = ?').bind(userInfo.email).first();
+      // Check if user already exists by google_id
+      const existing = await DB.prepare('SELECT id, credits FROM users WHERE google_id = ?').bind(googleId).first();
       if (existing) {
-        await DB.prepare('UPDATE users SET name = ?, picture = ?, last_login = ? WHERE email = ?')
-          .bind(userInfo.name || userInfo.email, userInfo.picture || '', Date.now(), userInfo.email)
+        // Returning user - update info, keep existing credits
+        await DB.prepare('UPDATE users SET email = ?, name = ?, picture = ?, last_login = ? WHERE google_id = ?')
+          .bind(userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', Date.now(), googleId)
           .run();
       } else {
+        // New user - INSERT with 3 credits
         await DB.prepare('INSERT INTO users (id, google_id, email, name, picture, credits, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-          .bind(sessionId, userInfo.sub || sessionId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', 3, Date.now(), Date.now())
+          .bind(sessionId, googleId, userInfo.email, userInfo.name || userInfo.email, userInfo.picture || '', 3, Date.now(), Date.now())
           .run();
       }
     }
