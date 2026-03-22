@@ -21,6 +21,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: bg-remover-q3t
+          projectName: bg-remover
           directory: public
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
