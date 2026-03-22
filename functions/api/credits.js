@@ -1,56 +1,104 @@
-import { createHash } from 'crypto';
+// GET /api/credits - 获取当前用户积分
+// POST /api/credits - 设置积分 (需要 X-Admin-Key header)
+// body: { userId, amount, action: 'set'|'add'|'deduct' }
 
-export async function onRequestGet(context) {
-  try {
-    const { DB } = context.env;
-    const clientIP = context.request.headers.get('CF-Connecting-IP') || 'unknown';
-    const ipHash = createHash('md5').update(clientIP).digest('hex');
-    const today = new Date().toISOString().slice(0, 10);
-    
-    // Inline session verification
-    const cookieHeader = context.request.headers.get('Cookie') || '';
-    const match = cookieHeader.match(/session=([^;]+)/);
-    let sessionUser = null;
-    if (match) {
-      try {
-        sessionUser = JSON.parse(decodeURIComponent(atob(match[1])));
-      } catch {}
+export async function onRequest(context) {
+  const { request, env } = context;
+
+  if (request.method === 'GET') {
+    const sessionCookie = getCookie(request, 'session');
+    if (!sessionCookie) {
+      return json({ credits: 0, isLoggedIn: false });
     }
-    
-    let credits = null;
-    let type = 'anonymous';
-    let remaining = null;
-    let limit = 3;
-    
-    if (sessionUser && DB) {
-      const user = await DB.prepare('SELECT credits, plan_type FROM users WHERE email = ?').bind(sessionUser.email).first();
-      if (user) {
-        credits = user.credits || 0;
-        type = user.plan_type === 'free' ? 'free_user' : 'subscriber';
-        remaining = credits;
-        limit = null;
-      }
-    } else if (DB) {
-      const record = await DB.prepare('SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?')
-        .bind(ipHash, today).first();
-      const uses = record?.uses || 0;
-      remaining = Math.max(0, 3 - uses);
-      type = 'anonymous';
-      limit = 3;
+
+    const user = parseSession(sessionCookie);
+    if (!user?.id) {
+      return json({ credits: 0, isLoggedIn: false });
     }
-    
-    return new Response(JSON.stringify({
-      credits: remaining,
-      type,
-      limit,
-      is_free: type === 'anonymous' || (type === 'free_user' && remaining <= 0)
-    }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+
+    try {
+      const result = await env.DB.prepare(
+        'SELECT credits FROM users WHERE id = ?'
+      ).bind(user.id).first();
+      return json({
+        credits: result?.credits ?? 0,
+        isLoggedIn: true,
+        user: { name: user.name, email: user.email, picture: user.picture }
+      });
+    } catch (e) {
+      return json({ credits: 0, isLoggedIn: false, error: e.message });
+    }
   }
+
+  if (request.method === 'POST') {
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return json({ error: 'Invalid JSON' }, 400);
+    }
+
+    const { userId, amount, action } = body;
+    if (!userId || amount === undefined) {
+      return json({ error: 'userId and amount required' }, 400);
+    }
+
+    // 简单的 admin key 验证
+    const adminKey = request.headers.get('X-Admin-Key');
+    if (adminKey !== env.ADMIN_SECRET) {
+      return json({ error: 'Unauthorized' }, 401);
+    }
+
+    try {
+      if (action === 'set') {
+        await env.DB.prepare('UPDATE users SET credits = ? WHERE id = ?')
+          .bind(amount, userId).run();
+      } else if (action === 'add') {
+        await env.DB.prepare('UPDATE users SET credits = credits + ? WHERE id = ?')
+          .bind(amount, userId).run();
+      } else if (action === 'deduct') {
+        const before = await env.DB.prepare('SELECT credits FROM users WHERE id = ?')
+          .bind(userId).first();
+        if (!before || before.credits < amount) {
+          return json({ success: false, error: 'Insufficient credits' }, 400);
+        }
+        await env.DB.prepare('UPDATE users SET credits = credits - ? WHERE id = ?')
+          .bind(amount, userId).run();
+      } else {
+        return json({ error: 'Invalid action' }, 400);
+      }
+
+      const updated = await env.DB.prepare('SELECT credits FROM users WHERE id = ?')
+        .bind(userId).first();
+      return json({ success: true, credits: updated?.credits ?? 0 });
+    } catch (e) {
+      return json({ error: e.message }, 500);
+    }
+  }
+
+  return json({ error: 'Method not allowed' }, 405);
+}
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+  });
+}
+
+function parseSession(cookie) {
+  try {
+    return JSON.parse(decodeURIComponent(cookie));
+  } catch {
+    return null;
+  }
+}
+
+function getCookie(request, name) {
+  const cookies = request.headers.get('Cookie') || '';
+  for (const cookie of cookies.split(';')) {
+    const [k, v] = cookie.trim().split('=');
+    if (k === name) return v;
+  }
+  return null;
 }

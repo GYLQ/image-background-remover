@@ -1,11 +1,28 @@
-import { createHash } from 'crypto';
+// Cloudflare Pages Function: POST /api/remove-bg
+// Handles image upload, credit checking, and remove.bg API call
 
 const REMOVE_BG_API = 'https://api.remove.bg/v1.0/removebg';
-const API_KEY = 'BsjaePtc6Vy2jhWZcJkJg71H';
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-function hashIP(ip) {
-  return createHash('md5').update(ip || 'unknown').digest('hex');
+// Simple async hash using Web Crypto API (available in Cloudflare Workers)
+async function hashIP(ip) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(ip || 'unknown');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Simple UUID generator (Web Crypto based, works in Cloudflare Workers)
+function generateId() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
 }
 
 async function verifySession(context) {
@@ -13,7 +30,7 @@ async function verifySession(context) {
   const match = cookieHeader.match(/session=([^;]+)/);
   if (!match) return null;
   try {
-    return JSON.parse(decodeURIComponent(atob(match[1])));
+    return JSON.parse(decodeURIComponent(match[1]));
   } catch {
     return null;
   }
@@ -21,121 +38,102 @@ async function verifySession(context) {
 
 export async function onRequestPost(context) {
   try {
-    const { DB, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = context.env;
+    const { env } = context;
     const clientIP = context.request.headers.get('CF-Connecting-IP') || 'unknown';
-    const ipHash = hashIP(clientIP);
+    const ipHash = await hashIP(clientIP);
     const today = new Date().toISOString().slice(0, 10);
-    
+
     // === CREDIT CHECK ===
     const sessionUser = await verifySession(context);
-    
+    const DB = env.DB;
+    const REMOVE_BG_API_KEY = env.REMOVE_BG_API_KEY;
+
     if (sessionUser && DB) {
       // Logged-in user: check credits
-      const user = await DB.prepare('SELECT credits, plan_type FROM users WHERE email = ?').bind(sessionUser.email).first();
-      
+      const user = await DB.prepare(
+        'SELECT credits, plan_type FROM users WHERE id = ?'
+      ).bind(sessionUser.id).first();
+
       if (!user) {
-        return new Response(JSON.stringify({ error: 'User not found' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json' },
-        });
+        return jsonResp({ error: 'User not found' }, 401);
       }
-      
-      const credits = user.credits || 0;
-      
+
+      const credits = user.credits ?? 0;
+
       if (credits <= 0) {
-        return new Response(JSON.stringify({
+        return jsonResp({
           error: 'no_credits',
           message: '积分不足，请升级或购买积分包',
           remaining: 0,
-          type: user.plan_type
-        }), {
-          status: 402,
-          headers: { 'Content-Type': 'application/json' },
-        });
+          type: user.plan_type || 'free'
+        }, 402);
       }
     } else if (DB) {
-      // Anonymous user: check IP daily limit (3/day)
-      const record = await DB.prepare('SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?')
-        .bind(ipHash, today).first();
-      const uses = record?.uses || 0;
-      
+      // Anonymous user: 3 uses per day via IP hash
+      const record = await DB.prepare(
+        'SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?'
+      ).bind(ipHash, today).first();
+      const uses = record?.uses ?? 0;
+
       if (uses >= 3) {
-        return new Response(JSON.stringify({
+        return jsonResp({
           error: 'daily_limit',
-          message: '今日免费次数已用完，请登录或注册获取更多积分',
+          message: '今日免费次数已用完（3次/天），请登录获取更多积分',
           remaining: 0,
           type: 'anonymous'
-        }), {
-          status: 402,
-          headers: { 'Content-Type': 'application/json' },
-        });
+        }, 402);
       }
     }
-    
+
     // === PARSE FORM DATA ===
     const formData = await context.request.formData();
     const imageFile = formData.get('image');
     const outputFormat = formData.get('format') || 'png';
-    
+
     if (!imageFile) {
-      return new Response(JSON.stringify({ error: 'No image provided' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return jsonResp({ error: 'No image provided' }, 400);
     }
-    
+
     if (imageFile.size > MAX_FILE_SIZE) {
-      return new Response(JSON.stringify({ error: 'File too large. Max 5MB.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return jsonResp({ error: 'File too large. Max 5MB.' }, 400);
     }
-    
+
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(imageFile.type)) {
-      return new Response(JSON.stringify({ error: 'Unsupported format. Use JPEG, PNG, or WebP.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return jsonResp({ error: 'Unsupported format. Use JPEG, PNG, or WebP.' }, 400);
     }
-    
+
     // === CALL REMOVE.BG API ===
-    const arrayBuffer = await imageFile.arrayBuffer();
     const bgRemovalForm = new FormData();
     bgRemovalForm.append('image_file', imageFile);
     bgRemovalForm.append('size', 'auto');
     bgRemovalForm.append('format', outputFormat);
-    
+
     const response = await fetch(REMOVE_BG_API, {
       method: 'POST',
-      headers: { 'Authorization': API_KEY },
+      headers: { 'X-Api-Key': REMOVE_BG_API_KEY },
       body: bgRemovalForm,
     });
-    
+
     if (!response.ok) {
       const err = await response.text();
-      return new Response(JSON.stringify({ error: 'Background removal failed', detail: err }), {
-        status: 502,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return jsonResp({ error: 'Background removal failed', detail: err }, 502);
     }
-    
+
     const resultBuffer = await response.arrayBuffer();
-    
+
     // === DEDUCT CREDITS ===
     if (DB) {
       if (sessionUser) {
-        // Deduct from user credits
-        await DB.prepare('UPDATE users SET credits = credits - 1 WHERE email = ?').bind(sessionUser.email).run();
-        await DB.prepare('INSERT INTO credit_usage (id, user_id, credits, action, file_size, created_at) VALUES (?, ?, 1, ?, ?, ?)')
-          .bind(
-            crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
-            sessionUser.email, 'remove_bg', imageFile.size, Date.now()
-          ).run();
+        await DB.prepare('UPDATE users SET credits = credits - 1 WHERE id = ?')
+          .bind(sessionUser.id).run();
+        await DB.prepare(
+          'INSERT INTO credit_usage (id, user_id, credits, action, file_size, created_at) VALUES (?, ?, 1, ?, ?, ?)'
+        ).bind(generateId(), sessionUser.id, 'remove_bg', imageFile.size, Date.now()).run();
       } else {
-        // Increment IP usage
-        const existing = await DB.prepare('SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?')
-          .bind(ipHash, today).first();
+        const existing = await DB.prepare(
+          'SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?'
+        ).bind(ipHash, today).first();
         if (existing) {
           await DB.prepare('UPDATE ip_daily_usage SET uses = uses + 1 WHERE ip_hash = ? AND date = ?')
             .bind(ipHash, today).run();
@@ -143,44 +141,49 @@ export async function onRequestPost(context) {
           await DB.prepare('INSERT INTO ip_daily_usage (ip_hash, date, uses) VALUES (?, ?, 1)')
             .bind(ipHash, today).run();
         }
-        await DB.prepare('INSERT INTO credit_usage (id, ip_hash, credits, action, file_size, created_at) VALUES (?, ?, 1, ?, ?, ?)')
-          .bind(
-            crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
-            ipHash, 'remove_bg', imageFile.size, Date.now()
-          ).run();
+        await DB.prepare(
+          'INSERT INTO credit_usage (id, ip_hash, credits, action, file_size, created_at) VALUES (?, ?, 1, ?, ?, ?)'
+        ).bind(generateId(), ipHash, 'remove_bg', imageFile.size, Date.now()).run();
       }
     }
-    
+
     // === RETURN RESULT ===
-    const contentType = outputFormat === 'jpeg' ? 'image/jpeg' : outputFormat === 'webp' ? 'image/webp' : 'image/png';
-    
-    // Get remaining credits for response
+    const contentType = outputFormat === 'jpeg' ? 'image/jpeg'
+      : outputFormat === 'webp' ? 'image/webp'
+      : 'image/png';
+
     let remaining = null;
     if (DB) {
       if (sessionUser) {
-        const user = await DB.prepare('SELECT credits FROM users WHERE email = ?').bind(sessionUser.email).first();
-        remaining = user?.credits || 0;
+        const user = await DB.prepare('SELECT credits FROM users WHERE id = ?')
+          .bind(sessionUser.id).first();
+        remaining = user?.credits ?? 0;
       } else {
-        const record = await DB.prepare('SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?')
-          .bind(ipHash, today).first();
-        remaining = Math.max(0, 3 - (record?.uses || 0));
+        const record = await DB.prepare(
+          'SELECT uses FROM ip_daily_usage WHERE ip_hash = ? AND date = ?'
+        ).bind(ipHash, today).first();
+        remaining = Math.max(0, 3 - (record?.uses ?? 0));
       }
     }
-    
+
     return new Response(resultBuffer, {
       status: 200,
       headers: {
         'Content-Type': contentType,
-        'X-Credits-Remaining': String(remaining),
+        'X-Credits-Remaining': String(remaining ?? 'N/A'),
         'X-Credit-Type': sessionUser ? 'user' : 'anonymous',
         'Cache-Control': 'no-store',
       },
     });
-    
+
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Internal error', message: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResp({ error: 'Internal error', message: err.message }, 500);
   }
+}
+
+function jsonResp(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+  });
 }

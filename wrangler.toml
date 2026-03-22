@@ -6,3 +6,6 @@ pages_build_output_dir = "public"
 binding = "DB"
 database_name = "image-background-remover"
 database_id = "550517a3-5265-458a-8c43-670c167c8801"
+
+[vars]
+REMOVE_BG_API_KEY = "your-remove.bg-api-key-here"
