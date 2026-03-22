@@ -1,7 +1,4 @@
 name = "bg-remover"
 compatibility_date = "2024-01-01"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "bg-remover-users"
-database_id = "a8af5e5a-38cd-4c51-9cdc-3e82a6d6f6ee"
+account_id = "6a37684f7f1e5d5f60d24cfb563f6939"
+pages_build_output_dir = "public"

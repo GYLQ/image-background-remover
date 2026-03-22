@@ -61,10 +61,10 @@
       <div class="user-info" id="user-info">
         <img id="user-avatar" src="" alt="">
         <span id="user-name"></span>
-        <button onclick="location.href='/auth/logout'" class="btn btn-secondary">退出</button>
+        <button onclick="location.href='/functions/auth/logout'" class="btn btn-secondary">退出</button>
       </div>
       <div id="auth-buttons">
-        <a href="/auth/login" class="btn btn-primary">使用 Google 登录</a>
+        <a href="/functions/auth/login" class="btn btn-primary">使用 Google 登录</a>
       </div>
     </div>
   </header>
@@ -75,7 +75,7 @@
       <div class="icon">🔐</div>
       <h2>需要登录</h2>
       <p>登录后才能使用图片背景移除功能</p>
-      <a href="/auth/login" class="btn btn-primary">使用 Google 登录</a>
+      <a href="/functions/auth/login" class="btn btn-primary">使用 Google 登录</a>
     </div>
 
     <!-- Upload zone: shown when logged in -->
@@ -206,7 +206,7 @@
     }
 
     // Auth check on load
-    fetch('/auth/user', { credentials: 'include' })
+    fetch('/functions/auth/user', { credentials: 'include' })
       .then(r => r.json())
       .then(d => {
         if (d.user) {
