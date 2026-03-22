@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>常见问题 - BG Remover</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; background: #f9fafb; }
+    header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 20px; font-weight: 700; color: #111827; }
+    .back-link { color: #4f46e5; text-decoration: none; font-size: 14px; }
+    .main { max-width: 700px; margin: 0 auto; padding: 40px 24px; }
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero h2 { font-size: 28px; color: #111827; margin-bottom: 8px; }
+    .hero p { color: #6b7280; font-size: 15px; }
+    .faq-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+    .faq-item { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .faq-q { padding: 18px 20px; font-size: 15px; font-weight: 600; color: #111827; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+    .faq-q:hover { background: #f9fafb; }
+    .faq-q::after { content: '+'; font-size: 22px; color: #4f46e5; transition: transform 0.2s; font-weight: 400; }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a { padding: 0 20px 18px; font-size: 14px; color: #6b7280; line-height: 1.8; display: none; }
+    .faq-item.open .faq-a { display: block; }
+    .cta-section { background: linear-gradient(135deg, #4f46e5, #6366f1); border-radius: 16px; padding: 32px; text-align: center; color: #fff; margin-bottom: 40px; }
+    .cta-section h3 { font-size: 20px; margin-bottom: 8px; }
+    .cta-section p { opacity: 0.85; font-size: 14px; margin-bottom: 20px; }
+    .cta-btn { display: inline-block; background: #fff; color: #4f46e5; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; }
+    .cta-btn:hover { background: #f9fafb; }
+    .contact { text-align: center; color: #9ca3af; font-size: 13px; padding: 20px; }
+    .contact a { color: #4f46e5; text-decoration: none; }
+    .footer { text-align: center; padding: 40px 24px 20px; color: #9ca3af; font-size: 13px; }
+    .footer a { color: #4f46e5; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🖼️ BG Remover</h1>
+    <a href="/" class="back-link">← 返回首页</a>
+  </header>
+
+  <div class="main">
+    <div class="hero">
+      <h2>常见问题</h2>
+      <p>快速解答您的疑问</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">每天有多少次免费使用？</div>
+        <div class="faq-a">未登录用户每天可免费使用3次。登录后每天仍有3次免费额度，另外注册即送3积分（永久）。付费用户根据套餐每月获得100-2000积分。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">积分会过期吗？</div>
+        <div class="faq-a">积分永不过期。未使用的积分会累积到下个月，无论您是免费用户还是付费用户。例如您有15积分，用了5次，剩余10积分仍可继续使用。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">付费方案如何购买？</div>
+        <div class="faq-a">我们即将支持 PayPal 和信用卡购买。在那之前，您可以通过积分包（一次性购买）来补充积分，享受更多使用额度。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">去背景后的图片有水印吗？</div>
+        <div class="faq-a">免费用户输出的图片会带有小水印。升级到付费方案（基础版及以上）即可去除水印，获得纯净的高清图片。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">支持哪些图片格式？</div>
+        <div class="faq-a">支持 JPEG、PNG 和 WebP 格式。最大支持 5MB 的图片文件。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">如何升级或取消订阅？</div>
+        <div class="faq-a">登录后进入个人中心，可以查看当前套餐和用量。如需升级或变更方案，请联系我们。取消订阅后您仍可使用剩余积分，不会被清零。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">个人隐私是否安全？</div>
+        <div class="faq-a">我们非常重视隐私。上传的图片会在处理完成后自动删除，不会保存到任何服务器。我们也不会存储您的 Google 账号信息（仅用于登录验证）。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">可以使用 API 吗？</div>
+        <div class="faq-a">API 访问即将向专业版和团队版用户开放。通过 API 您可以将去背景功能集成到自己的工作流程中，实现自动化处理。</div>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <h3>还有问题？</h3>
+      <p>我们随时为您提供帮助</p>
+      <a href="/" class="cta-btn">开始使用 →</a>
+    </div>
+
+    <div class="contact">
+      <p>联系邮箱：<a href="mailto:support@bgremover.us.ci">support@bgremover.us.ci</a></p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>BG Remover · <a href="/">首页</a> · <a href="/pricing">定价</a> · <a href="/faq">常见问题</a></p>
+  </div>
+
+  <script>
+    function toggleFaq(el) {
+      // Close others
+      document.querySelectorAll('.faq-item.open').forEach(item => {
+        if (item !== el) item.classList.remove('open');
+      });
+      el.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

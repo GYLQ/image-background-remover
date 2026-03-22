@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定价方案 - BG Remover</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; background: #f9fafb; }
+    header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 20px; font-weight: 700; color: #111827; }
+    .back-link { color: #4f46e5; text-decoration: none; font-size: 14px; }
+    .main { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .hero { text-align: center; margin-bottom: 48px; }
+    .hero h2 { font-size: 32px; color: #111827; margin-bottom: 12px; }
+    .hero p { color: #6b7280; font-size: 16px; max-width: 500px; margin: 0 auto; }
+    .toggle { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 24px 0; }
+    .toggle-label { font-size: 14px; color: #6b7280; }
+    .toggle-label.active { color: #111827; font-weight: 600; }
+    .toggle-switch { width: 48px; height: 26px; background: #d1d5db; border-radius: 13px; position: relative; cursor: pointer; transition: background 0.2s; }
+    .toggle-switch.on { background: #4f46e5; }
+    .toggle-switch::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; }
+    .toggle-switch.on::after { left: 25px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .plan-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 16px; padding: 28px 24px; position: relative; transition: all 0.2s; cursor: pointer; }
+    .plan-card:hover { border-color: #a5b4fc; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.1); }
+    .plan-card.popular { border-color: #4f46e5; background: linear-gradient(180deg, #eef2ff 0%, #fff 100%); }
+    .plan-card .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #4f46e5; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 16px; border-radius: 20px; }
+    .plan-name { font-size: 14px; color: #6b7280; margin-bottom: 8px; font-weight: 500; }
+    .plan-price { font-size: 36px; font-weight: 700; color: #111827; }
+    .plan-price span { font-size: 14px; color: #6b7280; font-weight: 400; }
+    .plan-credits { font-size: 14px; color: #4f46e5; margin: 8px 0 16px; font-weight: 500; }
+    .plan-per { font-size: 13px; color: #9ca3af; margin-bottom: 20px; }
+    .plan-features { list-style: none; margin-bottom: 24px; }
+    .plan-features li { font-size: 14px; color: #374151; padding: 6px 0; display: flex; align-items: center; gap: 8px; }
+    .plan-features li::before { content: '✓'; color: #4f46e5; font-weight: 700; }
+    .plan-btn { width: 100%; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 2px solid #e5e7eb; background: #fff; color: #374151; transition: all 0.2s; }
+    .plan-btn:hover { border-color: #4f46e5; color: #4f46e5; }
+    .plan-card.popular .plan-btn { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+    .plan-card.popular .plan-btn:hover { background: #4338ca; }
+    .plan-free { background: #f9fafb; text-align: center; }
+    .section-title { font-size: 22px; color: #111827; text-align: center; margin: 40px 0 24px; }
+    .compare-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 40px; }
+    .compare-table th { background: #f9fafb; padding: 14px 16px; text-align: center; font-size: 14px; color: #6b7280; font-weight: 500; }
+    .compare-table th:first-child { text-align: left; }
+    .compare-table td { padding: 12px 16px; text-align: center; font-size: 14px; color: #374151; border-bottom: 1px solid #f3f4f6; }
+    .compare-table td:first-child { text-align: left; font-weight: 500; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table .check { color: #4f46e5; font-size: 18px; }
+    .compare-table .cross { color: #d1d5db; font-size: 18px; }
+    .compare-table .highlight { background: #eef2ff; }
+    .note { background: #fff; border-radius: 16px; padding: 24px; text-align: center; color: #6b7280; font-size: 14px; line-height: 1.8; margin-bottom: 40px; }
+    .note strong { color: #374151; }
+    .faq-grid { display: grid; gap: 12px; margin-bottom: 40px; }
+    .faq-item { background: #fff; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+    .faq-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .faq-q { font-size: 15px; font-weight: 600; color: #111827; display: flex; justify-content: space-between; align-items: center; }
+    .faq-q::after { content: '+'; font-size: 20px; color: #4f46e5; transition: transform 0.2s; }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a { font-size: 14px; color: #6b7280; line-height: 1.7; margin-top: 10px; display: none; }
+    .faq-item.open .faq-a { display: block; }
+    .footer { text-align: center; padding: 40px 24px; color: #9ca3af; font-size: 13px; }
+    .footer a { color: #4f46e5; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🖼️ BG Remover</h1>
+    <a href="/" class="back-link">← 返回首页</a>
+  </header>
+
+  <div class="main">
+    <div class="hero">
+      <h2>简单透明的定价</h2>
+      <p>按需选择，积分永不过期。未登录用户每天免费3次。</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Free -->
+      <div class="plan-card plan-free">
+        <div class="plan-name">免费用户</div>
+        <div class="plan-price">¥0</div>
+        <div class="plan-credits">3积分</div>
+        <div class="plan-per">注册即得，用完可购买</div>
+        <ul class="plan-features">
+          <li>每天3次免费（无需登录）</li>
+          <li>注册获得3积分</li>
+          <li>有水印</li>
+          <li>720p 下载</li>
+        </ul>
+        <button class="plan-btn" onclick="window.location.href='/auth/login'">立即注册</button>
+      </div>
+
+      <!-- Basic -->
+      <div class="plan-card" onclick="selectPlan('basic')">
+        <div class="plan-name">基础版</div>
+        <div class="plan-price">¥9.9<span>/月</span></div>
+        <div class="plan-credits">100积分/月</div>
+        <div class="plan-per">约 ¥0.1/次</div>
+        <ul class="plan-features">
+          <li>每月100积分</li>
+          <li>无水印</li>
+          <li>4K 下载</li>
+          <li>优先处理</li>
+        </ul>
+        <button class="plan-btn">选择基础版</button>
+      </div>
+
+      <!-- Pro (Popular) -->
+      <div class="plan-card popular">
+        <div class="popular-badge">最受欢迎</div>
+        <div class="plan-name">专业版</div>
+        <div class="plan-price">¥29<span>/月</span></div>
+        <div class="plan-credits">400积分/月</div>
+        <div class="plan-per">约 ¥0.07/次</div>
+        <ul class="plan-features">
+          <li>每月400积分</li>
+          <li>无水印</li>
+          <li>4K 下载</li>
+          <li>优先处理</li>
+          <li>API 访问（即将）</li>
+        </ul>
+        <button class="plan-btn">选择专业版</button>
+      </div>
+
+      <!-- Team -->
+      <div class="plan-card" onclick="selectPlan('team')">
+        <div class="plan-name">团队版</div>
+        <div class="plan-price">¥99<span>/月</span></div>
+        <div class="plan-credits">2000积分/月</div>
+        <div class="plan-per">约 ¥0.05/次</div>
+        <ul class="plan-features">
+          <li>每月2000积分</li>
+          <li>无水印</li>
+          <li>4K + 原始尺寸</li>
+          <li>最高优先级</li>
+          <li>API 访问</li>
+          <li>多用户协作（即将）</li>
+        </ul>
+        <button class="plan-btn">选择团队版</button>
+      </div>
+    </div>
+
+    <!-- Feature Compare -->
+    <h3 class="section-title">功能对比</h3>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>免费</th>
+          <th class="highlight">基础版</th>
+          <th>专业版</th>
+          <th>团队版</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>每日免费次数</td><td>3次/天</td><td class="highlight">3次/天</td><td>3次/天</td><td>3次/天</td>
+        </tr>
+        <tr>
+          <td>月度积分</td><td>3积分</td><td class="highlight">100积分</td><td>400积分</td><td>2000积分</td>
+        </tr>
+        <tr>
+          <td>积分有效期</td><td>永不过期</td><td class="highlight">永不过期</td><td>永不过期</td><td>永不过期</td>
+        </tr>
+        <tr>
+          <td>去水印</td><td class="cross">✗</td><td class="highlight" class="check">✓</td><td class="check">✓</td><td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>4K 下载</td><td class="cross">✗</td><td class="highlight" class="check">✓</td><td class="check">✓</td><td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>原始尺寸下载</td><td class="cross">✗</td><td class="highlight" class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>优先处理</td><td class="cross">✗</td><td class="highlight" class="check">✓</td><td class="check">✓</td><td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>API 访问</td><td class="cross">✗</td><td class="highlight" class="cross">✗</td><td class="check">✓</td><td class="check">✓</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>积分永不过期</strong>：未使用的积分会累积到下个月。<br>
+      注册即送 <strong>3积分</strong>，可体验所有付费功能。<br>
+      付费功能接入 PayPal / 信用卡（即将支持）。
+    </div>
+
+    <!-- FAQ -->
+    <h3 class="section-title">常见问题</h3>
+    <div class="faq-grid">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">积分会过期吗？</div>
+        <div class="faq-a">不会。积分永不过期，购买后可持续累积使用。例如购买100积分，用了30次，剩余70次下月仍可使用。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">免费用户有什么限制？</div>
+        <div class="faq-a">未登录用户每天可免费使用3次。注册登录后可获得3积分（永久），并享受无水印等更多功能。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">如何升级到付费方案？</div>
+        <div class="faq-a">目前付费方案即将支持 PayPal 和信用卡购买。在此之前，您可以使用积分包（一次性购买）来补充积分。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">积分包和月订有什么区别？</div>
+        <div class="faq-a">积分包是一次性购买，积分永不过期。月订是每月自动获得固定积分，当月用不完会过期（但积分包不受影响）。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">可以开发票吗？</div>
+        <div class="faq-a">企业用户如需发票，请联系我们。个人用户暂时无法开具发票。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">如何联系客服？</div>
+        <div class="faq-a">如有问题，请通过 Telegram 或 GitHub Issues 联系我们。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>BG Remover · <a href="/">首页</a> · <a href="/pricing">定价</a> · <a href="/faq">常见问题</a></p>
+  </div>
+
+  <script>
+    function toggleFaq(el) {
+      el.classList.toggle('open');
+    }
+    function selectPlan(plan) {
+      alert('付费功能即将上线，敬请期待！您可以先购买积分包补充积分。');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 - BG Remover</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; background: #f9fafb; }
+    header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 20px; font-weight: 700; color: #111827; }
+    .back-link { color: #4f46e5; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .main { max-width: 700px; margin: 40px auto; padding: 0 24px; }
+    .card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card h2 { font-size: 16px; color: #111827; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f3f4f6; }
+    .user-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .user-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+    .user-meta h3 { font-size: 20px; color: #111827; }
+    .user-meta p { color: #6b7280; font-size: 14px; margin-top: 4px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+    .stat { background: #f9fafb; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-value { font-size: 28px; font-weight: 700; color: #4f46e5; }
+    .stat-label { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    .stat.warning .stat-value { color: #d97706; }
+    .stat.danger .stat-value { color: #dc2626; }
+    .credit-bar { background: #f3f4f6; border-radius: 8px; height: 12px; overflow: hidden; margin: 12px 0; }
+    .credit-bar-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #6366f1); border-radius: 8px; transition: width 0.5s; }
+    .credit-bar-fill.low { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .credit-bar-fill.empty { background: linear-gradient(90deg, #dc2626, #f87171); }
+    .credit-info { display: flex; justify-content: space-between; font-size: 13px; color: #6b7280; }
+    .plan-tag { display: inline-block; background: #eef2ff; color: #4f46e5; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-left: 8px; }
+    .plan-tag.free { background: #f3f4f6; color: #6b7280; }
+    .plan-tag.basic { background: #dbeafe; color: #1d4ed8; }
+    .plan-tag.pro { background: #eef2ff; color: #4f46e5; }
+    .plan-tag.team { background: #fef3c7; color: #92400e; }
+    .usage-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .usage-table th { text-align: left; color: #6b7280; font-weight: 500; padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
+    .usage-table td { padding: 10px 12px; color: #374151; border-bottom: 1px solid #f9fafb; }
+    .usage-table tr:last-child td { border-bottom: none; }
+    .usage-table .amount { font-weight: 600; color: #4f46e5; }
+    .upgrade-section { text-align: center; padding: 20px; }
+    .upgrade-section p { color: #6b7280; font-size: 14px; margin-bottom: 16px; }
+    .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; display: inline-block; text-decoration: none; transition: all 0.2s; }
+    .btn-primary { background: #4f46e5; color: #fff; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-outline { background: #fff; color: #4f46e5; border: 1px solid #e5e7eb; }
+    .btn-outline:hover { background: #f9fafb; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .pricing-mini { display: flex; gap: 12px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+    .pricing-mini-plan { border: 2px solid #e5e7eb; border-radius: 12px; padding: 14px 18px; text-align: center; min-width: 110px; }
+    .pricing-mini-plan.popular { border-color: #4f46e5; background: #eef2ff; }
+    .pricing-mini-plan h4 { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .pricing-mini-plan .price { font-size: 20px; font-weight: 700; color: #111827; }
+    .pricing-mini-plan .price span { font-size: 11px; color: #6b7280; font-weight: 400; }
+    .pricing-mini-plan .credits { font-size: 11px; color: #4f46e5; margin-top: 2px; }
+    .not-login { text-align: center; padding: 60px 24px; }
+    .not-login h2 { font-size: 22px; color: #111827; margin-bottom: 12px; }
+    .not-login p { color: #6b7280; margin-bottom: 24px; }
+    .footer { text-align: center; padding: 40px 24px; color: #9ca3af; font-size: 13px; }
+    .footer a { color: #4f46e5; text-decoration: none; }
+    .hidden { display: none !important; }
+    .loading { text-align: center; padding: 60px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🖼️ BG Remover</h1>
+    <a href="/" class="back-link">← 返回首页</a>
+  </header>
+
+  <div id="loading" class="loading">加载中...</div>
+  <div id="notLogin" class="not-login hidden">
+    <h2>请先登录</h2>
+    <p>登录后查看您的积分使用情况和订阅计划</p>
+    <a href="/auth/login" class="btn btn-primary">使用 Google 登录</a>
+  </div>
+  <div id="profileContent" class="main hidden">
+    <!-- User Info Card -->
+    <div class="card">
+      <div class="user-header">
+        <img id="userAvatar" src="" class="user-avatar" alt="avatar">
+        <div class="user-meta">
+          <h3 id="userName">--</h3>
+          <p id="userEmail">--</p>
+        </div>
+      </div>
+      <div id="creditSection">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:14px;color:#374151;font-weight:500;">我的积分</span>
+          <span id="planTag" class="plan-tag free">免费用户</span>
+        </div>
+        <div class="credit-bar">
+          <div id="creditBarFill" class="credit-bar-fill" style="width:0%"></div>
+        </div>
+        <div class="credit-info">
+          <span id="creditLeft">--</span>
+          <span id="creditTotal">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage Stats -->
+    <div class="card">
+      <h2>📊 使用统计</h2>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-value" id="statToday">--</div>
+          <div class="stat-label">今日使用</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statMonth">--</div>
+          <div class="stat-label">本月使用</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statTotal">--</div>
+          <div class="stat-label">累计使用</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Usage -->
+    <div class="card">
+      <h2>📋 最近使用记录</h2>
+      <table class="usage-table" id="usageTable">
+        <thead>
+          <tr>
+            <th>时间</th>
+            <th>操作</th>
+            <th>消耗</th>
+          </tr>
+        </thead>
+        <tbody id="usageTableBody">
+          <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">加载中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Upgrade -->
+    <div class="card upgrade-section">
+      <p>积分不够用？升级到付费方案，享受更多额度</p>
+      <div class="pricing-mini">
+        <div class="pricing-mini-plan">
+          <h4>基础版</h4>
+          <div class="price">¥9.9<span>/月</span></div>
+          <div class="credits">100积分/月</div>
+        </div>
+        <div class="pricing-mini-plan popular">
+          <h4>专业版</h4>
+          <div class="price">¥29<span>/月</span></div>
+          <div class="credits">400积分/月</div>
+        </div>
+        <div class="pricing-mini-plan">
+          <h4>团队版</h4>
+          <div class="price">¥99<span>/月</span></div>
+          <div class="credits">2000积分/月</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <a href="/pricing" class="btn btn-primary">查看定价详情</a>
+        <a href="/" class="btn btn-outline">继续使用</a>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <div class="card" style="text-align:center;">
+      <a href="/auth/logout" class="btn btn-danger">退出登录</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>BG Remover · <a href="/">首页</a> · <a href="/pricing">定价</a> · <a href="/faq">常见问题</a></p>
+  </div>
+
+  <script>
+    const PLAN_LIMITS = { free: 3, basic: 100, pro: 400, team: 2000 };
+
+    async function loadProfile() {
+      try {
+        const [userRes, creditsRes] = await Promise.all([
+          fetch('/auth/user'),
+          fetch('/functions/api/credits')
+        ]);
+        const userData = await userRes.json();
+        const creditsData = await creditsRes.json();
+
+        if (!userData.user) {
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('notLogin').classList.remove('hidden');
+          return;
+        }
+
+        const user = userData.user;
+        document.getElementById('userName').textContent = user.name || user.email;
+        document.getElementById('userEmail').textContent = user.email;
+        const avatar = document.getElementById('userAvatar');
+        avatar.src = user.picture || user.image || '';
+        avatar.onerror = () => {
+          avatar.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%234f46e5'/><text x='50' y='60' text-anchor='middle' fill='white' font-size='40'>${(user.name||'U')[0].toUpperCase()}</text></svg>`;
+        };
+
+        const credits = creditsData.credits ?? 0;
+        const plan = creditsData.plan || 'free';
+        const limit = PLAN_LIMITS[plan] || 3;
+        const pct = Math.min(100, Math.round((credits / limit) * 100));
+
+        document.getElementById('creditLeft').textContent = `剩余 ${credits} 积分`;
+        document.getElementById('creditTotal').textContent = `每月限额 ${limit} 积分`;
+
+        const bar = document.getElementById('creditBarFill');
+        bar.style.width = pct + '%';
+        bar.className = 'credit-bar-fill' + (pct <= 0 ? ' empty' : pct <= 20 ? ' low' : '');
+
+        const planTag = document.getElementById('planTag');
+        planTag.className = 'plan-tag ' + plan;
+        const planNames = { free: '免费用户', basic: '基础版', pro: '专业版', team: '团队版' };
+        planTag.textContent = planNames[plan] || '免费用户';
+
+        // Load usage stats
+        loadUsageStats(user.id || user.email);
+
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('profileContent').classList.remove('hidden');
+      } catch (e) {
+        document.getElementById('loading').innerHTML = '加载失败，请 <a href="/">返回首页</a>';
+      }
+    }
+
+    async function loadUsageStats(userId) {
+      // Today's usage
+      const today = new Date().toISOString().slice(0, 10);
+      try {
+        const res = await fetch(`/functions/api/usage?userId=${encodeURIComponent(userId)}&date=${today}`);
+        const data = await res.json();
+        document.getElementById('statToday').textContent = data.today ?? 0;
+        document.getElementById('statMonth').textContent = data.month ?? 0;
+        document.getElementById('statTotal').textContent = data.total ?? 0;
+
+        if (data.today >= 3) {
+          document.getElementById('statToday').parentElement.className = 'stat warning';
+        }
+
+        const tbody = document.getElementById('usageTableBody');
+        if (data.recent && data.recent.length > 0) {
+          tbody.innerHTML = data.recent.map(r => `
+            <tr>
+              <td>${new Date(r.created_at).toLocaleString('zh-CN')}</td>
+              <td>${r.action === 'remove_bg' ? '去背景' : r.action}</td>
+              <td class="amount">-${r.credits}</td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">暂无使用记录</td></tr>';
+        }
+      } catch (e) {
+        document.getElementById('usageTableBody').innerHTML = '<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">统计加载失败</td></tr>';
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

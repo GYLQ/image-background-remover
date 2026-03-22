@@ -71,6 +71,10 @@
   <header>
     <h1>🖼️ BG Remover</h1>
     <div class="header-right">
+      <nav style="display:flex;gap:16px;align-items:center;margin-right:12px;">
+        <a href="/pricing" style="color:#6b7280;text-decoration:none;font-size:14px;">定价</a>
+        <a href="/faq" style="color:#6b7280;text-decoration:none;font-size:14px;">常见问题</a>
+      </nav>
       <span id="creditBadge" class="credit-badge">剩余积分: <span id="creditCount">--</span></span>
       <div id="authArea" class="auth-gate">
         <button id="loginBtn" class="btn btn-primary" onclick="window.location.href='/auth/login'">使用 Google 登录</button>
@@ -138,7 +142,7 @@
   </main>
 
   <div class="footer">
-    <p>BG Remover · <a href="/auth/login">登录</a> · 常见问题</p>
+    <p>BG Remover · <a href="/pricing">定价</a> · <a href="/faq">常见问题</a> · <a href="/auth/login">登录</a></p>
   </div>
 
   <script>
@@ -171,6 +175,7 @@
 
     function showUserInfo(user) {
       document.getElementById('authArea').innerHTML = `
+        <a href="/profile" class="btn btn-outline" style="font-size:13px;padding:6px 12px;">个人中心</a>
         <div class="user-info">
           <img src="${user.picture || user.image || '/assets/default-avatar.png'}" class="user-avatar" alt="avatar" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%234f46e5%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22>${(user.name || user.email || 'U')[0].toUpperCase()}</text></svg>'">
           <span class="user-name">${escapeHtml(user.name || user.email)}</span>
