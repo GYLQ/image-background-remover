@@ -64,7 +64,7 @@ export async function onRequestGet(context) {
       });
     }
 
-    // Create session data
+    // Create session data - use encodeURIComponent to handle Unicode
     const sessionData = {
       id: userInfo.sub || Math.random().toString(36).slice(2),
       email: userInfo.email,
@@ -72,7 +72,7 @@ export async function onRequestGet(context) {
       picture: userInfo.picture || '',
     };
 
-    const encodedSession = btoa(JSON.stringify(sessionData));
+    const encodedSession = btoa(encodeURIComponent(JSON.stringify(sessionData)));
     const cookie = `session=${encodedSession}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${60 * 60 * 24 * 7}`;
 
     return new Response(null, {

@@ -9,7 +9,7 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const sessionData = JSON.parse(atob(match[1]));
+    const sessionData = JSON.parse(decodeURIComponent(atob(match[1])));
     return new Response(JSON.stringify({
       user: {
         id: sessionData.id,
