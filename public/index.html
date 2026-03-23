@@ -75,7 +75,7 @@
         <a href="/pricing" data-i18n="navPricing" style="color:#6b7280;text-decoration:none;font-size:14px;">定价</a>
         <a href="/faq" data-i18n="navFaq" style="color:#6b7280;text-decoration:none;font-size:14px;">常见问题</a>
       </nav>
-      <span id="creditBadge" class="credit-badge" data-i18n="creditBadge">剩余积分: <span id="creditCount">--</span></span>
+      <span id="creditBadge" class="credit-badge"><span data-i18n="creditBadge">剩余积分</span>: <span id="creditCount">--</span></span>
       <button id="langToggle" onclick="toggleLang()" style="padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;font-size:13px;cursor:pointer;margin-left:12px;">EN</button>
       <div id="authArea" class="auth-gate">
         <button id="loginBtn" class="btn btn-primary" onclick="window.location.href='/auth/login'" data-i18n="loginBtn">使用 Google 登录</button>
@@ -399,6 +399,77 @@
       zone.classList.remove('dragover');
       const file = e.dataTransfer.files[0];
       if (file) handleFile(file);
+    });
+
+    // === LANGUAGE SWITCHER ===
+    const LANG = {};
+    LANG.zh = {
+      navPricing: '定价',
+      navFaq: '常见问题',
+      creditBadge: '剩余积分',
+      loginBtn: '使用 Google 登录',
+      upgradeTitle: '积分不足',
+      upgradeDesc: '您的积分已用完，请购买积分包继续使用。注册即送 3 积分。',
+      upgradePlanStarter: '体验包',
+      upgradePlanStarterCredits: '30积分',
+      upgradePlanValue: '超值包',
+      upgradePlanValueCredits: '200积分',
+      upgradePlanBulk: '畅用包',
+      upgradePlanBulkCredits: '1000积分',
+      upgradeLater: '稍后再说',
+      upgradeViewAll: '查看全部',
+      uploadTitle: '点击上传图片',
+      uploadDesc: '支持 JPEG, PNG, WebP，最大 5MB',
+      loadingText: '正在去除背景...',
+      resultTitle: '✅ 处理完成',
+      resultNext: '处理下一张',
+      downloadPng: '下载 PNG',
+      downloadJpeg: '下载 JPEG'
+    };
+    LANG.en = {
+      navPricing: 'Pricing',
+      navFaq: 'FAQ',
+      creditBadge: 'Credits',
+      loginBtn: 'Sign in with Google',
+      upgradeTitle: 'Out of Credits',
+      upgradeDesc: 'You\'ve used all your credits. Buy a credit pack to continue. Sign up for 3 free credits!',
+      upgradePlanStarter: 'Starter Pack',
+      upgradePlanStarterCredits: '30 Credits',
+      upgradePlanValue: 'Value Pack',
+      upgradePlanValueCredits: '200 Credits',
+      upgradePlanBulk: 'Bulk Pack',
+      upgradePlanBulkCredits: '1000 Credits',
+      upgradeLater: 'Later',
+      upgradeViewAll: 'View All',
+      uploadTitle: 'Click to Upload Image',
+      uploadDesc: 'Supports JPEG, PNG, WebP, max 5MB',
+      loadingText: 'Removing background...',
+      resultTitle: '✅ Done',
+      resultNext: 'Process Next',
+      downloadPng: 'Download PNG',
+      downloadJpeg: 'Download JPEG'
+    };
+
+    function toggleLang() {
+      const lang = localStorage.getItem('lang') === 'en' ? 'zh' : 'en';
+      localStorage.setItem('lang', lang);
+      applyLang(lang);
+    }
+
+    function applyLang(lang) {
+      const btn = document.getElementById('langToggle');
+      if (btn) btn.textContent = lang === 'en' ? '中' : 'EN';
+      document.querySelectorAll('[data-i18n]').forEach(e => {
+        const key = e.getAttribute('data-i18n');
+        if (LANG[lang][key] !== undefined) {
+          e.textContent = LANG[lang][key];
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('lang') || 'zh';
+      applyLang(lang);
     });
 
     // === INIT ===
