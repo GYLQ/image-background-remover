@@ -403,7 +403,7 @@
         return;
       }
       try {
-        const res = await fetch('/api/paypal/subscribe', {
+        const res = await fetch('/api/paypal/subscription', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ planId, userId: currentUser.id }),
