@@ -68,14 +68,17 @@
 <body>
   <header>
     <h1>🖼️ BG Remover</h1>
-    <a href="/" class="back-link">← 返回首页</a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/" class="back-link" data-i18n="backToHome">← 返回首页</a>
+      <button id="langToggle" onclick="toggleLang()" style="padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;font-size:13px;cursor:pointer;">EN</button>
+    </div>
   </header>
 
-  <div id="loading" class="loading">加载中...</div>
+  <div id="loading" class="loading" data-i18n="loading">加载中...</div>
   <div id="notLogin" class="not-login hidden">
-    <h2>请先登录</h2>
-    <p>登录后查看您的积分使用情况和订阅计划</p>
-    <a href="/auth/login" class="btn btn-primary">使用 Google 登录</a>
+    <h2 data-i18n="notLoginTitle">请先登录</h2>
+    <p data-i18n="notLoginDesc">登录后查看您的积分使用情况和订阅计划</p>
+    <a href="/auth/login" class="btn btn-primary" data-i18n="googleLogin">使用 Google 登录</a>
   </div>
   <div id="profileContent" class="main hidden">
     <!-- User Info Card -->
@@ -89,8 +92,8 @@
       </div>
       <div id="creditSection">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:14px;color:#374151;font-weight:500;">我的积分</span>
-          <span id="planTag" class="plan-tag free">免费用户</span>
+          <span style="font-size:14px;color:#374151;font-weight:500;" data-i18n="myCredits">我的积分</span>
+          <span id="planTag" class="plan-tag free" data-i18n="planTagFree">免费用户</span>
         </div>
         <div class="credit-bar">
           <div id="creditBarFill" class="credit-bar-fill" style="width:0%"></div>
@@ -104,77 +107,185 @@
 
     <!-- Usage Stats -->
     <div class="card">
-      <h2>📊 使用统计</h2>
+      <h2 data-i18n="usageStatsTitle">📊 使用统计</h2>
       <div class="stat-grid">
         <div class="stat">
           <div class="stat-value" id="statToday">--</div>
-          <div class="stat-label">今日使用</div>
+          <div class="stat-label" data-i18n="statTodayLabel">今日使用</div>
         </div>
         <div class="stat">
           <div class="stat-value" id="statMonth">--</div>
-          <div class="stat-label">本月使用</div>
+          <div class="stat-label" data-i18n="statMonthLabel">本月使用</div>
         </div>
         <div class="stat">
           <div class="stat-value" id="statTotal">--</div>
-          <div class="stat-label">累计使用</div>
+          <div class="stat-label" data-i18n="statTotalLabel">累计使用</div>
         </div>
       </div>
     </div>
 
     <!-- Recent Usage -->
     <div class="card">
-      <h2>📋 最近使用记录</h2>
+      <h2 data-i18n="recentUsageTitle">📋 最近使用记录</h2>
       <table class="usage-table" id="usageTable">
         <thead>
           <tr>
-            <th>时间</th>
-            <th>操作</th>
-            <th>消耗</th>
+            <th data-i18n="thTime">时间</th>
+            <th data-i18n="thAction">操作</th>
+            <th data-i18n="thCost">消耗</th>
           </tr>
         </thead>
         <tbody id="usageTableBody">
-          <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">加载中...</td></tr>
+          <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;" data-i18n="loadingRecords">加载中...</td></tr>
         </tbody>
       </table>
     </div>
 
     <!-- Upgrade -->
     <div class="card upgrade-section">
-      <p>积分不够用？购买积分包，永久有效</p>
+      <p data-i18n="upgradeText">积分不够用？购买积分包，永久有效</p>
       <div class="pricing-mini">
         <div class="pricing-mini-plan">
-          <h4>体验包</h4>
+          <h4 data-i18n="packStarterMini">体验包</h4>
           <div class="price">¥6</div>
-          <div class="credits">30积分</div>
+          <div class="credits" data-i18n="credits30">30积分</div>
         </div>
         <div class="pricing-mini-plan popular">
-          <h4>超值包</h4>
+          <h4 data-i18n="packValueMini">超值包</h4>
           <div class="price">¥30</div>
-          <div class="credits">200积分</div>
+          <div class="credits" data-i18n="credits200">200积分</div>
         </div>
         <div class="pricing-mini-plan">
-          <h4>畅用包</h4>
+          <h4 data-i18n="packBulkMini">畅用包</h4>
           <div class="price">¥100</div>
-          <div class="credits">1000积分</div>
+          <div class="credits" data-i18n="credits1000">1000积分</div>
         </div>
       </div>
       <div class="btn-group">
-        <a href="/pricing" class="btn btn-primary">查看全部方案</a>
-        <a href="/" class="btn btn-outline">继续使用</a>
+        <a href="/pricing" class="btn btn-primary" data-i18n="viewPlans">查看全部方案</a>
+        <a href="/" class="btn btn-outline" data-i18n="continueUsing">继续使用</a>
       </div>
     </div>
 
     <!-- Logout -->
     <div class="card" style="text-align:center;">
-      <a href="/auth/logout" class="btn btn-danger">退出登录</a>
+      <a href="/auth/logout" class="btn btn-danger" data-i18n="logout">退出登录</a>
     </div>
   </div>
 
   <div class="footer">
-    <p>BG Remover · <a href="/">首页</a> · <a href="/pricing">定价</a> · <a href="/faq">常见问题</a></p>
+    <p>BG Remover · <a href="/" data-i18n="footerHome">首页</a> · <a href="/pricing" data-i18n="footerPricing">定价</a> · <a href="/faq" data-i18n="footerFaq">常见问题</a></p>
   </div>
 
   <script>
+    // ── LANGUAGE SWITCHER ──────────────────────────────────────────────────────
+    const LANG = { zh: {}, en: {} };
+
+    LANG.zh = {
+      backToHome: '← 返回首页',
+      loading: '加载中...',
+      notLoginTitle: '请先登录',
+      notLoginDesc: '登录后查看您的积分使用情况和订阅计划',
+      googleLogin: '使用 Google 登录',
+      myCredits: '我的积分',
+      planTagFree: '免费用户',
+      planTagBasic: '基础版',
+      planTagPro: '专业版',
+      planTagTeam: '团队版',
+      usageStatsTitle: '📊 使用统计',
+      statTodayLabel: '今日使用',
+      statMonthLabel: '本月使用',
+      statTotalLabel: '累计使用',
+      recentUsageTitle: '📋 最近使用记录',
+      thTime: '时间',
+      thAction: '操作',
+      thCost: '消耗',
+      loadingRecords: '加载中...',
+      noRecords: '暂无使用记录',
+      upgradeText: '积分不够用？购买积分包，永久有效',
+      packStarterMini: '体验包',
+      packValueMini: '超值包',
+      packBulkMini: '畅用包',
+      credits30: '30积分',
+      credits200: '200积分',
+      credits1000: '1000积分',
+      viewPlans: '查看全部方案',
+      continueUsing: '继续使用',
+      logout: '退出登录',
+      footerHome: '首页',
+      footerPricing: '定价',
+      footerFaq: '常见问题',
+      creditsLeft: '剩余 {n} 积分',
+      monthlyLimit: '每月限额 {n} 积分',
+      actionRemoveBg: '去背景',
+      loadFail: '加载失败，请 ',
+      returnHome: '返回首页',
+      statLoadFail: '统计加载失败',
+    };
+
+    LANG.en = {
+      backToHome: '← Back to Home',
+      loading: 'Loading...',
+      notLoginTitle: 'Please log in first',
+      notLoginDesc: 'View your credit usage and subscription plan after logging in',
+      googleLogin: 'Sign in with Google',
+      myCredits: 'My Credits',
+      planTagFree: 'Free User',
+      planTagBasic: 'Basic',
+      planTagPro: 'Pro',
+      planTagTeam: 'Team',
+      usageStatsTitle: '📊 Usage Stats',
+      statTodayLabel: 'Today',
+      statMonthLabel: 'This Month',
+      statTotalLabel: 'Total',
+      recentUsageTitle: '📋 Recent Usage',
+      thTime: 'Time',
+      thAction: 'Action',
+      thCost: 'Cost',
+      loadingRecords: 'Loading...',
+      noRecords: 'No usage records yet',
+      upgradeText: 'Running low on credits? Buy credit packs — never expire!',
+      packStarterMini: 'Starter',
+      packValueMini: 'Value',
+      packBulkMini: 'Bulk',
+      credits30: '30 credits',
+      credits200: '200 credits',
+      credits1000: '1000 credits',
+      viewPlans: 'View All Plans',
+      continueUsing: 'Continue Using',
+      logout: 'Log Out',
+      footerHome: 'Home',
+      footerPricing: 'Pricing',
+      footerFaq: 'FAQ',
+      creditsLeft: '{n} credits left',
+      monthlyLimit: '{n} monthly limit',
+      actionRemoveBg: 'Remove BG',
+      loadFail: 'Failed to load. ',
+      returnHome: 'Return to home',
+      statLoadFail: 'Failed to load stats',
+    };
+
+    function toggleLang() {
+      const lang = localStorage.getItem('lang') === 'en' ? 'zh' : 'en';
+      localStorage.setItem('lang', lang);
+      applyLang(lang);
+    }
+
+    function applyLang(lang) {
+      const btn = document.getElementById('langToggle');
+      if (btn) btn.textContent = lang === 'en' ? '中' : 'EN';
+      document.querySelectorAll('[data-i18n]').forEach(e => {
+        const key = e.getAttribute('data-i18n');
+        if (LANG[lang][key]) e.innerHTML = LANG[lang][key];
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('lang') || 'zh';
+      applyLang(lang);
+    });
+
+    // ── APP ──────────────────────────────────────────────────────────────────────
     const PLAN_LIMITS = { free: 3, basic: 100, pro: 400, team: 2000 };
 
     async function loadProfile() {
@@ -192,6 +303,7 @@
           return;
         }
 
+        const lang = localStorage.getItem('lang') || 'zh';
         const user = userData.user;
         document.getElementById('userName').textContent = user.name || user.email;
         document.getElementById('userEmail').textContent = user.email;
@@ -206,8 +318,8 @@
         const limit = PLAN_LIMITS[plan] || 3;
         const pct = Math.min(100, Math.round((credits / limit) * 100));
 
-        document.getElementById('creditLeft').textContent = `剩余 ${credits} 积分`;
-        document.getElementById('creditTotal').textContent = `每月限额 ${limit} 积分`;
+        document.getElementById('creditLeft').textContent = LANG[lang].creditsLeft.replace('{n}', credits);
+        document.getElementById('creditTotal').textContent = LANG[lang].monthlyLimit.replace('{n}', limit);
 
         const bar = document.getElementById('creditBarFill');
         bar.style.width = pct + '%';
@@ -215,8 +327,10 @@
 
         const planTag = document.getElementById('planTag');
         planTag.className = 'plan-tag ' + plan;
-        const planNames = { free: '免费用户', basic: '基础版', pro: '专业版', team: '团队版' };
-        planTag.textContent = planNames[plan] || '免费用户';
+        const planNames = { free: 'planTagFree', basic: 'planTagBasic', pro: 'planTagPro', team: 'planTagTeam' };
+        const planKey = planNames[plan] || 'planTagFree';
+        planTag.setAttribute('data-i18n', planKey);
+        planTag.textContent = LANG[lang][planKey];
 
         // Load usage stats
         loadUsageStats(user.id || user.email);
@@ -224,13 +338,14 @@
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('profileContent').classList.remove('hidden');
       } catch (e) {
-        document.getElementById('loading').innerHTML = '加载失败，请 <a href="/">返回首页</a>';
+        const lang = localStorage.getItem('lang') || 'zh';
+        document.getElementById('loading').innerHTML = LANG[lang].loadFail + '<a href="/">' + LANG[lang].returnHome + '</a>';
       }
     }
 
     async function loadUsageStats(userId) {
-      // Today's usage
       const today = new Date().toISOString().slice(0, 10);
+      const lang = localStorage.getItem('lang') || 'zh';
       try {
         const res = await fetch(`/api/usage?userId=${encodeURIComponent(userId)}&date=${today}`);
         const data = await res.json();
@@ -246,16 +361,16 @@
         if (data.recent && data.recent.length > 0) {
           tbody.innerHTML = data.recent.map(r => `
             <tr>
-              <td>${new Date(r.created_at).toLocaleString('zh-CN')}</td>
-              <td>${r.action === 'remove_bg' ? '去背景' : r.action}</td>
+              <td>${new Date(r.created_at).toLocaleString(lang === 'en' ? 'en-US' : 'zh-CN')}</td>
+              <td>${r.action === 'remove_bg' ? LANG[lang].actionRemoveBg : r.action}</td>
               <td class="amount">-${r.credits}</td>
             </tr>
           `).join('');
         } else {
-          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">暂无使用记录</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">' + LANG[lang].noRecords + '</td></tr>';
         }
       } catch (e) {
-        document.getElementById('usageTableBody').innerHTML = '<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">统计加载失败</td></tr>';
+        document.getElementById('usageTableBody').innerHTML = '<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:20px;">' + LANG[lang].statLoadFail + '</td></tr>';
       }
     }
 

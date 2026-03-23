@@ -72,12 +72,13 @@
     <h1>🖼️ BG Remover</h1>
     <div class="header-right">
       <nav style="display:flex;gap:16px;align-items:center;margin-right:12px;">
-        <a href="/pricing" style="color:#6b7280;text-decoration:none;font-size:14px;">定价</a>
-        <a href="/faq" style="color:#6b7280;text-decoration:none;font-size:14px;">常见问题</a>
+        <a href="/pricing" data-i18n="navPricing" style="color:#6b7280;text-decoration:none;font-size:14px;">定价</a>
+        <a href="/faq" data-i18n="navFaq" style="color:#6b7280;text-decoration:none;font-size:14px;">常见问题</a>
       </nav>
-      <span id="creditBadge" class="credit-badge">剩余积分: <span id="creditCount">--</span></span>
+      <span id="creditBadge" class="credit-badge" data-i18n="creditBadge">剩余积分: <span id="creditCount">--</span></span>
+      <button id="langToggle" onclick="toggleLang()" style="padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;font-size:13px;cursor:pointer;margin-left:12px;">EN</button>
       <div id="authArea" class="auth-gate">
-        <button id="loginBtn" class="btn btn-primary" onclick="window.location.href='/auth/login'">使用 Google 登录</button>
+        <button id="loginBtn" class="btn btn-primary" onclick="window.location.href='/auth/login'" data-i18n="loginBtn">使用 Google 登录</button>
       </div>
     </div>
   </header>
@@ -86,28 +87,28 @@
 
   <div id="upgradeModal" class="upgrade-modal">
     <div class="upgrade-modal-content">
-      <h2 id="upgradeTitle">积分不足</h2>
-      <p id="upgradeDesc">您的积分已用完，请购买积分包继续使用。注册即送 3 积分。</p>
+      <h2 id="upgradeTitle" data-i18n="upgradeTitle">积分不足</h2>
+      <p id="upgradeDesc" data-i18n="upgradeDesc">您的积分已用完，请购买积分包继续使用。注册即送 3 积分。</p>
       <div class="pricing">
         <div class="upgrade-plan" onclick="window.location.href='/pricing'">
-          <h4>体验包</h4>
+          <h4 data-i18n="upgradePlanStarter">体验包</h4>
           <div class="price">¥6</div>
-          <div class="credits">30积分</div>
+          <div class="credits" data-i18n="upgradePlanStarterCredits">30积分</div>
         </div>
         <div class="upgrade-plan popular" onclick="window.location.href='/pricing'">
-          <h4>超值包</h4>
+          <h4 data-i18n="upgradePlanValue">超值包</h4>
           <div class="price">¥30</div>
-          <div class="credits">200积分</div>
+          <div class="credits" data-i18n="upgradePlanValueCredits">200积分</div>
         </div>
         <div class="upgrade-plan" onclick="window.location.href='/pricing'">
-          <h4>畅用包</h4>
+          <h4 data-i18n="upgradePlanBulk">畅用包</h4>
           <div class="price">¥100</div>
-          <div class="credits">1000积分</div>
+          <div class="credits" data-i18n="upgradePlanBulkCredits">1000积分</div>
         </div>
       </div>
       <div class="btn-group">
-        <button class="btn btn-outline" onclick="closeUpgradeModal()">稍后再说</button>
-        <button class="btn btn-primary" onclick="window.location.href='/pricing'">查看全部</button>
+        <button class="btn btn-outline" onclick="closeUpgradeModal()" data-i18n="upgradeLater">稍后再说</button>
+        <button class="btn btn-primary" onclick="window.location.href='/pricing'" data-i18n="upgradeViewAll">查看全部</button>
       </div>
     </div>
   </div>
@@ -116,22 +117,22 @@
     <div id="uploadSection">
       <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
         <div class="upload-icon">📤</div>
-        <h2>点击上传图片</h2>
-        <p>支持 JPEG, PNG, WebP，最大 5MB</p>
+        <h2 data-i18n="uploadTitle">点击上传图片</h2>
+        <p data-i18n="uploadDesc">支持 JPEG, PNG, WebP，最大 5MB</p>
       </div>
       <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleFile(this.files[0])">
     </div>
 
     <div id="loadingSection" class="loading-section">
       <div class="spinner"></div>
-      <p>正在去除背景...</p>
+      <p data-i18n="loadingText">正在去除背景...</p>
     </div>
 
     <div id="resultSection" class="result-section">
       <div class="result-card">
         <div class="result-header">
-          <h3>✅ 处理完成</h3>
-          <button class="btn btn-outline" onclick="resetUI()">处理下一张</button>
+          <h3 data-i18n="resultTitle">✅ 处理完成</h3>
+          <button class="btn btn-outline" onclick="resetUI()" data-i18n="resultNext">处理下一张</button>
         </div>
         <div class="result-body">
           <div class="result-img-wrap">
@@ -139,8 +140,8 @@
           </div>
         </div>
         <div class="result-actions">
-          <button class="btn btn-primary" onclick="downloadResult('png')">下载 PNG</button>
-          <button class="btn btn-outline" onclick="downloadResult('jpeg')">下载 JPEG</button>
+          <button class="btn btn-primary" onclick="downloadResult('png')" data-i18n="downloadPng">下载 PNG</button>
+          <button class="btn btn-outline" onclick="downloadResult('jpeg')" data-i18n="downloadJpeg">下载 JPEG</button>
         </div>
       </div>
     </div>

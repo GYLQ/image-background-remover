@@ -36,68 +36,151 @@
 <body>
   <header>
     <h1>🖼️ BG Remover</h1>
-    <a href="/" class="back-link">← 返回首页</a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/" class="back-link" data-i18n="backToHome">← 返回首页</a>
+      <button id="langToggle" onclick="toggleLang()" style="padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;font-size:13px;cursor:pointer;">EN</button>
+    </div>
   </header>
 
   <div class="main">
     <div class="hero">
-      <h2>常见问题</h2>
-      <p>快速解答您的疑问</p>
+      <h2 data-i18n="faqHeroTitle">常见问题</h2>
+      <p data-i18n="faqHeroDesc">快速解答您的疑问</p>
     </div>
 
     <div class="faq-list">
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">每天有多少次免费使用？</div>
-        <div class="faq-a">未登录用户每天可免费使用3次。登录后每天仍有3次免费额度，另外注册即送3积分（永久）。付费用户根据套餐每月获得100-2000积分。</div>
+        <div class="faq-q" data-i18n="faq1Q">每天有多少次免费使用？</div>
+        <div class="faq-a" data-i18n="faq1A">未登录用户每天可免费使用3次。登录后每天仍有3次免费额度，另外注册即送3积分（永久）。付费用户根据套餐每月获得100-2000积分。</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">积分会过期吗？</div>
-        <div class="faq-a">积分永不过期。未使用的积分会累积到下个月，无论您是免费用户还是付费用户。例如您有15积分，用了5次，剩余10积分仍可继续使用。</div>
+        <div class="faq-q" data-i18n="faq2Q">积分会过期吗？</div>
+        <div class="faq-a" data-i18n="faq2A">积分永不过期。未使用的积分会累积到下个月，无论您是免费用户还是付费用户。例如您有15积分，用了5次，剩余10积分仍可继续使用。</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">付费方案如何购买？</div>
-        <div class="faq-a">我们即将支持 PayPal 和信用卡购买。在那之前，您可以通过积分包（一次性购买）来补充积分，享受更多使用额度。</div>
+        <div class="faq-q" data-i18n="faq3Q">付费方案如何购买？</div>
+        <div class="faq-a" data-i18n="faq3A">我们即将支持 PayPal 和信用卡购买。在那之前，您可以通过积分包（一次性购买）来补充积分，享受更多使用额度。</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">去背景后的图片有水印吗？</div>
-        <div class="faq-a">免费用户输出的图片会带有小水印。升级到付费方案（基础版及以上）即可去除水印，获得纯净的高清图片。</div>
+        <div class="faq-q" data-i18n="faq4Q">去背景后的图片有水印吗？</div>
+        <div class="faq-a" data-i18n="faq4A">免费用户输出的图片会带有小水印。升级到付费方案（基础版及以上）即可去除水印，获得纯净的高清图片。</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">支持哪些图片格式？</div>
-        <div class="faq-a">支持 JPEG、PNG 和 WebP 格式。最大支持 5MB 的图片文件。</div>
+        <div class="faq-q" data-i18n="faq5Q">支持哪些图片格式？</div>
+        <div class="faq-a" data-i18n="faq5A">支持 JPEG、PNG 和 WebP 格式。最大支持 5MB 的图片文件。</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">如何升级或取消订阅？</div>
-        <div class="faq-a">登录后进入个人中心，可以查看当前套餐和用量。如需升级或变更方案，请联系我们。取消订阅后您仍可使用剩余积分，不会被清零。</div>
+        <div class="faq-q" data-i18n="faq6Q">如何升级或取消订阅？</div>
+        <div class="faq-a" data-i18n="faq6A">登录后进入个人中心，可以查看当前套餐和用量。如需升级或变更方案，请联系我们。取消订阅后您仍可使用剩余积分，不会被清零。</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">个人隐私是否安全？</div>
-        <div class="faq-a">我们非常重视隐私。上传的图片会在处理完成后自动删除，不会保存到任何服务器。我们也不会存储您的 Google 账号信息（仅用于登录验证）。</div>
+        <div class="faq-q" data-i18n="faq7Q">个人隐私是否安全？</div>
+        <div class="faq-a" data-i18n="faq7A">我们非常重视隐私。上传的图片会在处理完成后自动删除，不会保存到任何服务器。我们也不会存储您的 Google 账号信息（仅用于登录验证）。</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">可以使用 API 吗？</div>
-        <div class="faq-a">API 访问即将向专业版和团队版用户开放。通过 API 您可以将去背景功能集成到自己的工作流程中，实现自动化处理。</div>
+        <div class="faq-q" data-i18n="faq8Q">可以使用 API 吗？</div>
+        <div class="faq-a" data-i18n="faq8A">API 访问即将向专业版和团队版用户开放。通过 API 您可以将去背景功能集成到自己的工作流程中，实现自动化处理。</div>
       </div>
     </div>
 
     <div class="cta-section">
-      <h3>还有问题？</h3>
-      <p>我们随时为您提供帮助</p>
-      <a href="/" class="cta-btn">开始使用 →</a>
+      <h3 data-i18n="ctaTitle">还有问题？</h3>
+      <p data-i18n="ctaDesc">我们随时为您提供帮助</p>
+      <a href="/" class="cta-btn" data-i18n="ctaBtn">开始使用 →</a>
     </div>
 
     <div class="contact">
-      <p>联系邮箱：<a href="mailto:support@bgremover.us.ci">support@bgremover.us.ci</a></p>
+      <p data-i18n="contactText">联系邮箱：<a href="mailto:support@bgremover.us.ci">support@bgremover.us.ci</a></p>
     </div>
   </div>
 
   <div class="footer">
-    <p>BG Remover · <a href="/">首页</a> · <a href="/pricing">定价</a> · <a href="/faq">常见问题</a></p>
+    <p>BG Remover · <a href="/" data-i18n="footerHome">首页</a> · <a href="/pricing" data-i18n="footerPricing">定价</a> · <a href="/faq" data-i18n="footerFaq">常见问题</a></p>
   </div>
 
   <script>
+    // ── LANGUAGE SWITCHER ──────────────────────────────────────────────────────
+    const LANG = { zh: {}, en: {} };
+
+    LANG.zh = {
+      backToHome: '← 返回首页',
+      faqHeroTitle: '常见问题',
+      faqHeroDesc: '快速解答您的疑问',
+      faq1Q: '每天有多少次免费使用？',
+      faq1A: '未登录用户每天可免费使用3次。登录后每天仍有3次免费额度，另外注册即送3积分（永久）。付费用户根据套餐每月获得100-2000积分。',
+      faq2Q: '积分会过期吗？',
+      faq2A: '积分永不过期。未使用的积分会累积到下个月，无论您是免费用户还是付费用户。例如您有15积分，用了5次，剩余10积分仍可继续使用。',
+      faq3Q: '付费方案如何购买？',
+      faq3A: '我们即将支持 PayPal 和信用卡购买。在那之前，您可以通过积分包（一次性购买）来补充积分，享受更多使用额度。',
+      faq4Q: '去背景后的图片有水印吗？',
+      faq4A: '免费用户输出的图片会带有小水印。升级到付费方案（基础版及以上）即可去除水印，获得纯净的高清图片。',
+      faq5Q: '支持哪些图片格式？',
+      faq5A: '支持 JPEG、PNG 和 WebP 格式。最大支持 5MB 的图片文件。',
+      faq6Q: '如何升级或取消订阅？',
+      faq6A: '登录后进入个人中心，可以查看当前套餐和用量。如需升级或变更方案，请联系我们。取消订阅后您仍可使用剩余积分，不会被清零。',
+      faq7Q: '个人隐私是否安全？',
+      faq7A: '我们非常重视隐私。上传的图片会在处理完成后自动删除，不会保存到任何服务器。我们也不会存储您的 Google 账号信息（仅用于登录验证）。',
+      faq8Q: '可以使用 API 吗？',
+      faq8A: 'API 访问即将向专业版和团队版用户开放。通过 API 您可以将去背景功能集成到自己的工作流程中，实现自动化处理。',
+      ctaTitle: '还有问题？',
+      ctaDesc: '我们随时为您提供帮助',
+      ctaBtn: '开始使用 →',
+      contactText: '联系邮箱：',
+      footerHome: '首页',
+      footerPricing: '定价',
+      footerFaq: '常见问题',
+    };
+
+    LANG.en = {
+      backToHome: '← Back to Home',
+      faqHeroTitle: 'FAQ',
+      faqHeroDesc: 'Quick answers to your questions',
+      faq1Q: 'How many free uses per day?',
+      faq1A: 'Unlogged users get 3 free uses per day. Logged-in users also get 3 daily free uses, plus 3 permanent credits on signup. Paid users get 100–2000 credits per month based on their plan.',
+      faq2Q: 'Do credits expire?',
+      faq2A: 'Credits never expire. Unused credits roll over to the next month, whether you are a free or paid user. For example, if you have 15 credits and use 5, the remaining 10 credits are still available.',
+      faq3Q: 'How to purchase a paid plan?',
+      faq3A: 'PayPal and credit card support is coming soon. In the meantime, you can purchase credit packs (one-time purchase) to top up your credits and enjoy more usage.',
+      faq4Q: 'Is there a watermark on processed images?',
+      faq4A: 'Free users get a small watermark on output images. Upgrade to a paid plan (Basic or above) to remove the watermark and get clean high-resolution images.',
+      faq5Q: 'What image formats are supported?',
+      faq5A: 'JPEG, PNG, and WebP formats are supported. Maximum file size is 5MB.',
+      faq6Q: 'How to upgrade or cancel a subscription?',
+      faq6A: 'After logging in, go to your profile to check your current plan and usage. Contact us to upgrade or change plans. After cancellation, you can still use your remaining credits.',
+      faq7Q: 'Is my privacy safe?',
+      faq7A: 'We take privacy seriously. Uploaded images are automatically deleted after processing and are never stored on any server. We also do not store your Google account information (used only for login verification).',
+      faq8Q: 'Can I use the API?',
+      faq8A: 'API access is coming soon for Pro and Team plan users. Through the API, you can integrate background removal into your own workflows for automated processing.',
+      ctaTitle: 'Still have questions?',
+      ctaDesc: "We're here to help",
+      ctaBtn: 'Get Started →',
+      contactText: 'Contact: ',
+      footerHome: 'Home',
+      footerPricing: 'Pricing',
+      footerFaq: 'FAQ',
+    };
+
+    function toggleLang() {
+      const lang = localStorage.getItem('lang') === 'en' ? 'zh' : 'en';
+      localStorage.setItem('lang', lang);
+      applyLang(lang);
+    }
+
+    function applyLang(lang) {
+      const btn = document.getElementById('langToggle');
+      if (btn) btn.textContent = lang === 'en' ? '中' : 'EN';
+      document.querySelectorAll('[data-i18n]').forEach(e => {
+        const key = e.getAttribute('data-i18n');
+        if (LANG[lang][key]) e.innerHTML = LANG[lang][key];
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('lang') || 'zh';
+      applyLang(lang);
+    });
+
     function toggleFaq(el) {
-      // Close others
       document.querySelectorAll('.faq-item.open').forEach(item => {
         if (item !== el) item.classList.remove('open');
       });
