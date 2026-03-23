@@ -403,10 +403,10 @@
         return;
       }
       try {
-        const res = await fetch('/api/paypal/subscription', {
+        const res = await fetch('/api/paypal/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ planId, userId: currentUser.id }),
+          body: JSON.stringify({ subscriptionPlanId: planId, userId: currentUser.id }),
         });
         const data = await res.json();
         if (!res.ok) {
