@@ -42,7 +42,7 @@ export async function onRequestPost(context) {
   let accessToken;
   try {
     const creds = btoa(`${CLIENT_ID}:${SECRET}`);
-    const tokenRes = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
+    const tokenRes = await fetch('https://api-m.paypal.com/v1/oauth2/token', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${creds}`,
@@ -62,7 +62,7 @@ export async function onRequestPost(context) {
   // Verify order status with PayPal
   let orderStatus;
   try {
-    const verifyRes = await fetch(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderID}`, {
+    const verifyRes = await fetch(`https://api-m.paypal.com/v2/checkout/orders/${orderID}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'PayPal-Request-Id': `verify_${Date.now()}_${userId}`,
