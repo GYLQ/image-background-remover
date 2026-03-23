@@ -10,6 +10,11 @@ function json(data, status = 200) {
 }
 
 export async function onRequestPost(context) {
+  // Subscription feature is disabled per user request
+  return json({ error: 'disabled' }, 403);
+}
+
+export async function onRequestPost_DISABLED(context) {
   const { request, env } = context;
 
   if (request.method !== 'POST') {
