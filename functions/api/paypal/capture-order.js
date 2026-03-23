@@ -23,9 +23,9 @@ export async function onRequestPost(context) {
   }
 
   const PACKS = {
-    starter: { credits: 30 },
-    value:   { credits: 200 },
-    bulk:    { credits: 1000 },
+    starter: { credits: 30, usd: '6.00' },
+    value:   { credits: 200, usd: '30.00' },
+    bulk:    { credits: 1000, usd: '100.00' },
   };
   const pack = PACKS[packId];
   if (!pack) {
@@ -117,7 +117,7 @@ export async function onRequestPost(context) {
     } else {
       await env.DB.prepare(
         'INSERT INTO paypal_orders (order_id, user_id, pack_id, credits, amount_usd, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-      ).bind(orderID, userId, packId, pack.credits, PACKS[packId]?.credits_usd || '0', 'completed', Date.now()).run();
+      ).bind(orderID, userId, packId, pack.credits, pack.usd, 'completed', Date.now()).run();
     }
 
     // Get updated balance

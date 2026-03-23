@@ -1,4 +1,4 @@
-// POST /api/paypal/create-subscription
+// POST /api/paypal/subscribe
 // Creates a PayPal subscription and returns the approval URL
 
 export async function onRequestPost(context) {
@@ -20,7 +20,6 @@ export async function onRequestPost(context) {
     return json({ error: 'planId and userId required' }, 400);
   }
 
-  // Monthly plan definitions
   const PLANS = {
     basic: { name: 'BG Remover Basic', credits: 60, usd: '1.35' },
     pro:   { name: 'BG Remover Pro', credits: 200, usd: '3.95' },
@@ -43,7 +42,7 @@ export async function onRequestPost(context) {
   try {
     user = await env.DB.prepare('SELECT id, email, name FROM users WHERE id = ?').bind(userId).first();
   } catch (e) {
-    return json({ error: 'Database error', detail: e.message }, 500);
+    return json({ error: 'Database error' }, 500);
   }
   if (!user) {
     return json({ error: 'User not found' }, 404);
@@ -63,11 +62,11 @@ export async function onRequestPost(context) {
     });
     const tokenData = await tokenRes.json();
     if (!tokenRes.ok) {
-      return json({ error: 'PayPal auth failed', detail: tokenData }, 502);
+      return json({ error: 'PayPal auth failed' }, 502);
     }
     accessToken = tokenData.access_token;
   } catch (e) {
-    return json({ error: 'PayPal network error', detail: e.message }, 502);
+    return json({ error: 'PayPal network error' }, 502);
   }
 
   // Create subscription
@@ -101,7 +100,7 @@ export async function onRequestPost(context) {
     const subData = await subRes.json();
 
     if (!subRes.ok) {
-      return json({ error: 'Subscription creation failed', detail: subData }, 502);
+      return json({ error: 'Subscription creation failed', detail: subData.error || subData.message }, 502);
     }
 
     // Store in D1
@@ -121,7 +120,7 @@ export async function onRequestPost(context) {
     });
 
   } catch (e) {
-    return json({ error: 'Subscription failed', detail: e.message }, 502);
+    return json({ error: 'Subscription failed' }, 502);
   }
 }
 
