@@ -106,74 +106,77 @@
 <body>
   <header>
     <h1>🖼️ BG Remover</h1>
-    <a href="/" style="color:#4f46e5;text-decoration:none;font-size:14px;">← 返回首页</a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/" data-i18n="backToHome" style="color:#4f46e5;text-decoration:none;font-size:14px;">← 返回首页</a>
+      <button id="langToggle" onclick="toggleLang()" style="padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;font-size:13px;cursor:pointer;">EN</button>
+    </div>
   </header>
 
   <div class="main">
     <div class="hero">
-      <h2>简单透明，按需付费</h2>
-      <p>注册即送 <strong style="color:#111827">3 积分</strong>，用完购买积分包。无月费、无订阅、直接使用。</p>
+      <h2 data-i18n="heroTitle">简单透明，按需付费</h2>
+      <p data-i18n="heroDesc">注册即送 <strong style="color:#111827">3 积分</strong>，用完购买积分包。无月费、无订阅、直接使用。</p>
     </div>
 
     <div id="paymentResult" class="payment-result" style="display:none"></div>
 
     <div class="pill-tabs">
-      <div class="pill-tab active" id="tab-packs" onclick="switchTab('packs')">💎 积分包</div>
-      <div class="pill-tab" id="tab-monthly" onclick="switchTab('monthly')">📅 月费会员</div>
+      <div class="pill-tab active" id="tab-packs" onclick="switchTab('packs')" data-i18n="tabPacks">💎 积分包</div>
+      <div class="pill-tab" id="tab-monthly" onclick="switchTab('monthly')" data-i18n="tabMonthly">📅 月费会员</div>
     </div>
 
     <!-- Credit Packs -->
     <div class="pricing-section active" id="section-packs">
-      <div class="section-label">一次性购买 · 永不过期 · USD 结算</div>
+      <div class="section-label" data-i18n="sectionPacksLabel">一次性购买 · 永不过期 · USD 结算</div>
       <div class="pack-grid">
         <div class="pack-card" id="pack-starter">
-          <div class="pack-label">体验</div>
-          <div class="pack-name">体验包</div>
-          <div class="pack-desc">先试试水</div>
+          <div class="pack-label" data-i18n="packStarterLabel">体验</div>
+          <div class="pack-name" data-i18n="packStarterName">体验包</div>
+          <div class="pack-desc" data-i18n="packStarterDesc">先试试水</div>
           <div class="pack-price"><span class="currency">¥</span><span class="amount">6</span></div>
-          <div class="pack-credits">30 积分</div>
-          <div class="pack-per">≈ $0.80 USD · ¥0.20/次</div>
+          <div class="pack-credits" data-i18n="packStarterCredits">30 积分</div>
+          <div class="pack-per" data-i18n="packStarterPer">≈ $0.80 USD · ¥0.20/次</div>
           <ul class="pack-features">
-            <li><span class="check">✓</span> 30 次使用</li>
-            <li><span class="check">✓</span> 积分永不过期</li>
-            <li><span class="check">✓</span> 无水印输出</li>
-            <li><span class="check">✓</span> 720p 下载</li>
+            <li><span class="check">✓</span> <span data-i18n="packStarterF1">30 次使用</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packStarterF2">积分永不过期</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packStarterF3">无水印输出</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packStarterF4">720p 下载</span></li>
           </ul>
           <div class="paypal-btn-wrap" id="paypal-btn-starter"></div>
         </div>
 
         <div class="pack-card popular" id="pack-value">
-          <div class="savings-badge">性价比之选</div>
-          <div class="pack-label best">推荐</div>
-          <div class="pack-name">超值包</div>
-          <div class="pack-desc">最受欢迎的选择</div>
+          <div class="savings-badge" data-i18n="packValueBadge">性价比之选</div>
+          <div class="pack-label best" data-i18n="packValueLabel">推荐</div>
+          <div class="pack-name" data-i18n="packValueName">超值包</div>
+          <div class="pack-desc" data-i18n="packValueDesc">最受欢迎的选择</div>
           <div class="pack-price"><span class="currency">¥</span><span class="amount">30</span></div>
-          <div class="pack-credits">200 积分</div>
-          <div class="pack-per">≈ $4.00 USD · ¥0.15/次</div>
+          <div class="pack-credits" data-i18n="packValueCredits">200 积分</div>
+          <div class="pack-per" data-i18n="packValuePer">≈ $4.00 USD · ¥0.15/次</div>
           <ul class="pack-features">
-            <li><span class="check">✓</span> 200 次使用</li>
-            <li><span class="check">✓</span> 积分永不过期</li>
-            <li><span class="check">✓</span> 无水印输出</li>
-            <li><span class="check">✓</span> 4K 下载</li>
-            <li><span class="check">✓</span> 优先处理</li>
+            <li><span class="check">✓</span> <span data-i18n="packValueF1">200 次使用</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packValueF2">积分永不过期</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packValueF3">无水印输出</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packValueF4">4K 下载</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packValueF5">优先处理</span></li>
           </ul>
           <div class="paypal-btn-wrap" id="paypal-btn-value"></div>
         </div>
 
         <div class="pack-card" id="pack-bulk">
-          <div class="pack-label hot">大额</div>
-          <div class="pack-name">畅用包</div>
-          <div class="pack-desc">用得越多越划算</div>
+          <div class="pack-label hot" data-i18n="packBulkLabel">大额</div>
+          <div class="pack-name" data-i18n="packBulkName">畅用包</div>
+          <div class="pack-desc" data-i18n="packBulkDesc">用得越多越划算</div>
           <div class="pack-price"><span class="currency">¥</span><span class="amount">100</span></div>
-          <div class="pack-credits">1000 积分</div>
-          <div class="pack-per">≈ $13.50 USD · ¥0.10/次</div>
+          <div class="pack-credits" data-i18n="packBulkCredits">1000 积分</div>
+          <div class="pack-per" data-i18n="packBulkPer">≈ $13.50 USD · ¥0.10/次</div>
           <ul class="pack-features">
-            <li><span class="check">✓</span> 1000 次使用</li>
-            <li><span class="check">✓</span> 积分永不过期</li>
-            <li><span class="check">✓</span> 无水印输出</li>
-            <li><span class="check">✓</span> 4K 下载</li>
-            <li><span class="check">✓</span> 最高优先级</li>
-            <li><span class="check">✓</span> 优先客服支持</li>
+            <li><span class="check">✓</span> <span data-i18n="packBulkF1">1000 次使用</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packBulkF2">积分永不过期</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packBulkF3">无水印输出</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packBulkF4">4K 下载</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packBulkF5">最高优先级</span></li>
+            <li><span class="check">✓</span> <span data-i18n="packBulkF6">优先客服支持</span></li>
           </ul>
           <div class="paypal-btn-wrap" id="paypal-btn-bulk"></div>
         </div>
@@ -182,65 +185,65 @@
 
     <!-- Monthly Subscriptions -->
     <div class="pricing-section" id="section-monthly">
-      <div class="section-label">每月自动到账 · 连续使用更划算</div>
+      <div class="section-label" data-i18n="sectionMonthlyLabel">每月自动到账 · 连续使用更划算</div>
       <div class="pricing-grid">
         <div class="plan-card">
-          <div class="popular-badge" style="left:auto;right:-1px;border-radius:10px 10px 0 0;">¥9.9/月</div>
+          <div class="popular-badge" data-i18n="basicBadge" style="left:auto;right:-1px;border-radius:10px 10px 0 0;">¥9.9/月</div>
           <div class="plan-icon">🌱</div>
-          <div class="plan-name">基础版</div>
-          <div class="plan-tagline">轻度使用</div>
-          <div class="plan-price"><span class="currency">¥</span><span class="amount">9.9</span><span class="period">/月</span></div>
-          <div class="plan-credits">60 积分 / 月</div>
-          <div class="plan-cost-hint">≈ $1.35 USD / 月</div>
+          <div class="plan-name" data-i18n="basicName">基础版</div>
+          <div class="plan-tagline" data-i18n="basicTagline">轻度使用</div>
+          <div class="plan-price"><span class="currency">¥</span><span class="amount">9.9</span><span class="period" data-i18n="basicPeriod">/月</span></div>
+          <div class="plan-credits" data-i18n="basicCredits">60 积分 / 月</div>
+          <div class="plan-cost-hint" data-i18n="basicCostHint">≈ $1.35 USD / 月</div>
           <ul class="plan-features">
-            <li><span class="check">✓</span> 每月 60 积分</li>
-            <li><span class="check">✓</span> 积分当月有效</li>
-            <li><span class="check">✓</span> 无水印输出</li>
-            <li><span class="check">✓</span> 4K 下载</li>
+            <li><span class="check">✓</span> <span data-i18n="basicF1">每月 60 积分</span></li>
+            <li><span class="check">✓</span> <span data-i18n="basicF2">积分当月有效</span></li>
+            <li><span class="check">✓</span> <span data-i18n="basicF3">无水印输出</span></li>
+            <li><span class="check">✓</span> <span data-i18n="basicF4">4K 下载</span></li>
           </ul>
           <div class="paypal-btn-wrap">
-            <button class="sub-btn" disabled style="background:#9ca3af;border-color:#9ca3af" onclick="return false">即将上线</button>
+            <button class="sub-btn" disabled style="background:#9ca3af;border-color:#9ca3af" onclick="return false" data-i18n="comingSoon">即将上线</button>
           </div>
         </div>
 
         <div class="plan-card popular">
-          <div class="popular-badge">最受欢迎</div>
+          <div class="popular-badge" data-i18n="proBadge">最受欢迎</div>
           <div class="plan-icon">⭐</div>
-          <div class="plan-name">专业版</div>
-          <div class="plan-tagline">频繁使用</div>
-          <div class="plan-price"><span class="currency">¥</span><span class="amount">29</span><span class="period">/月</span></div>
-          <div class="plan-credits">200 积分 / 月</div>
-          <div class="plan-cost-hint">≈ $3.95 USD / 月</div>
+          <div class="plan-name" data-i18n="proName">专业版</div>
+          <div class="plan-tagline" data-i18n="proTagline">频繁使用</div>
+          <div class="plan-price"><span class="currency">¥</span><span class="amount">29</span><span class="period" data-i18n="proPeriod">/月</span></div>
+          <div class="plan-credits" data-i18n="proCredits">200 积分 / 月</div>
+          <div class="plan-cost-hint" data-i18n="proCostHint">≈ $3.95 USD / 月</div>
           <ul class="plan-features">
-            <li><span class="check">✓</span> 每月 200 积分</li>
-            <li><span class="check">✓</span> 积分当月有效</li>
-            <li><span class="check">✓</span> 无水印输出</li>
-            <li><span class="check">✓</span> 4K 下载</li>
-            <li><span class="check">✓</span> 优先处理</li>
-            <li><span class="check">✓</span> API 访问（即将）</li>
+            <li><span class="check">✓</span> <span data-i18n="proF1">每月 200 积分</span></li>
+            <li><span class="check">✓</span> <span data-i18n="proF2">积分当月有效</span></li>
+            <li><span class="check">✓</span> <span data-i18n="proF3">无水印输出</span></li>
+            <li><span class="check">✓</span> <span data-i18n="proF4">4K 下载</span></li>
+            <li><span class="check">✓</span> <span data-i18n="proF5">优先处理</span></li>
+            <li><span class="check">✓</span> <span data-i18n="proF6">API 访问（即将）</span></li>
           </ul>
           <div class="paypal-btn-wrap">
-            <button class="sub-btn" disabled style="background:#9ca3af;border-color:#9ca3af" onclick="return false">即将上线</button>
+            <button class="sub-btn" disabled style="background:#9ca3af;border-color:#9ca3af" onclick="return false" data-i18n="comingSoon">即将上线</button>
           </div>
         </div>
 
         <div class="plan-card">
-          <div class="popular-badge" style="left:auto;right:-1px;border-radius:10px 10px 0 0;">¥99/月</div>
+          <div class="popular-badge" data-i18n="teamBadge" style="left:auto;right:-1px;border-radius:10px 10px 0 0;">¥99/月</div>
           <div class="plan-icon">🚀</div>
-          <div class="plan-name">团队版</div>
-          <div class="plan-tagline">高强度使用</div>
-          <div class="plan-price"><span class="currency">¥</span><span class="amount">99</span><span class="period">/月</span></div>
-          <div class="plan-credits">800 积分 / 月</div>
-          <div class="plan-cost-hint">≈ $13.50 USD / 月</div>
+          <div class="plan-name" data-i18n="teamName">团队版</div>
+          <div class="plan-tagline" data-i18n="teamTagline">高强度使用</div>
+          <div class="plan-price"><span class="currency">¥</span><span class="amount">99</span><span class="period" data-i18n="teamPeriod">/月</span></div>
+          <div class="plan-credits" data-i18n="teamCredits">800 积分 / 月</div>
+          <div class="plan-cost-hint" data-i18n="teamCostHint">≈ $13.50 USD / 月</div>
           <ul class="plan-features">
-            <li><span class="check">✓</span> 每月 800 积分</li>
-            <li><span class="check">✓</span> 积分当月有效</li>
-            <li><span class="check">✓</span> 无水印 + 原始尺寸</li>
-            <li><span class="check">✓</span> 最高优先级</li>
-            <li><span class="check">✓</span> 完整 API 访问</li>
+            <li><span class="check">✓</span> <span data-i18n="teamF1">每月 800 积分</span></li>
+            <li><span class="check">✓</span> <span data-i18n="teamF2">积分当月有效</span></li>
+            <li><span class="check">✓</span> <span data-i18n="teamF3">无水印 + 原始尺寸</span></li>
+            <li><span class="check">✓</span> <span data-i18n="teamF4">最高优先级</span></li>
+            <li><span class="check">✓</span> <span data-i18n="teamF5">完整 API 访问</span></li>
           </ul>
           <div class="paypal-btn-wrap">
-            <button class="sub-btn" disabled style="background:#9ca3af;border-color:#9ca3af" onclick="return false">即将上线</button>
+            <button class="sub-btn" disabled style="background:#9ca3af;border-color:#9ca3af" onclick="return false" data-i18n="comingSoon">即将上线</button>
           </div>
         </div>
       </div>
@@ -248,58 +251,342 @@
 
     <!-- Feature Compare -->
     <div class="compare-section">
-      <h3>功能对比</h3>
+      <h3 data-i18n="compareTitle">功能对比</h3>
       <table class="compare-table">
         <thead>
           <tr>
-            <th>功能</th>
-            <th>免费试用<br><span style="font-size:11px;color:#9ca3af;font-weight:400">注册送3积分</span></th>
-            <th class="highlight-col">基础版<br><span style="font-size:11px;font-weight:400">¥9.9/月</span></th>
-            <th>专业版<br><span style="font-size:11px;color:#9ca3af;font-weight:400">¥29/月</span></th>
-            <th>团队版<br><span style="font-size:11px;color:#9ca3af;font-weight:400">¥99/月</span></th>
+            <th data-i18n="compareTh1">功能</th>
+            <th data-i18n="compareTh2">免费试用<br><span style="font-size:11px;color:#9ca3af;font-weight:400" data-i18n="compareTh2Sub">注册送3积分</span></th>
+            <th class="highlight-col" data-i18n="compareTh3">基础版<br><span style="font-size:11px;font-weight:400" data-i18n="compareTh3Sub">¥9.9/月</span></th>
+            <th data-i18n="compareTh4">专业版<br><span style="font-size:11px;color:#9ca3af;font-weight:400" data-i18n="compareTh4Sub">¥29/月</span></th>
+            <th data-i18n="compareTh5">团队版<br><span style="font-size:11px;color:#9ca3af;font-weight:400" data-i18n="compareTh5Sub">¥99/月</span></th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>积分</td><td>3（永久）</td><td class="highlight-col">60/月</td><td>200/月</td><td>800/月</td></tr>
-          <tr><td>积分有效期</td><td>永不过期</td><td class="highlight-col">当月有效</td><td>当月有效</td><td>当月有效</td></tr>
-          <tr><td>积分包叠加</td><td colspan="4" style="text-align:center"><span class="check">✓</span> 月费用户可同时购买积分包</td></tr>
-          <tr><td>去水印</td><td><span class="cross">—</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
-          <tr><td>4K 下载</td><td><span class="cross">—</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
-          <tr><td>原始尺寸</td><td><span class="cross">—</span></td><td class="highlight-col"><span class="cross">—</span></td><td><span class="cross">—</span></td><td><span class="check">✓</span></td></tr>
-          <tr><td>优先处理</td><td><span class="cross">—</span></td><td class="highlight-col"><span class="cross">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
-          <tr><td>API 访问</td><td><span class="cross">—</span></td><td class="highlight-col"><span class="cross">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td data-i18n="compareTdCredits">积分</td><td data-i18n="compareTdFreeCredits">3（永久）</td><td class="highlight-col" data-i18n="compareTdBasicCredits">60/月</td><td data-i18n="compareTdProCredits">200/月</td><td data-i18n="compareTdTeamCredits">800/月</td></tr>
+          <tr><td data-i18n="compareTdExpiry">积分有效期</td><td data-i18n="compareTdFreeExpiry">永不过期</td><td class="highlight-col" data-i18n="compareTdBasicExpiry">当月有效</td><td data-i18n="compareTdProExpiry">当月有效</td><td data-i18n="compareTdTeamExpiry">当月有效</td></tr>
+          <tr><td data-i18n="compareTdStack">积分包叠加</td><td colspan="4" style="text-align:center" data-i18n="compareTdStackVal"><span class="check">✓</span> 月费用户可同时购买积分包</td></tr>
+          <tr><td data-i18n="compareTdWatermark">去水印</td><td data-i18n="compareTdFreeNo">—</td><td class="highlight-col" data-i18n="compareTdBasicYes"><span class="check">✓</span></td><td data-i18n="compareTdProYes"><span class="check">✓</span></td><td data-i18n="compareTdTeamYes"><span class="check">✓</span></td></tr>
+          <tr><td data-i18n="compareTd4k">4K 下载</td><td data-i18n="compareTdFreeNo">—</td><td class="highlight-col" data-i18n="compareTdBasicYes"><span class="check">✓</span></td><td data-i18n="compareTdProYes"><span class="check">✓</span></td><td data-i18n="compareTdTeamYes"><span class="check">✓</span></td></tr>
+          <tr><td data-i18n="compareTdOriginal">原始尺寸</td><td data-i18n="compareTdFreeNo">—</td><td class="highlight-col" data-i18n="compareTdBasicNo">—</td><td data-i18n="compareTdProNo">—</td><td data-i18n="compareTdTeamYes"><span class="check">✓</span></td></tr>
+          <tr><td data-i18n="compareTdPriority">优先处理</td><td data-i18n="compareTdFreeNo">—</td><td class="highlight-col" data-i18n="compareTdBasicNo">—</td><td data-i18n="compareTdProYes"><span class="check">✓</span></td><td data-i18n="compareTdTeamYes"><span class="check">✓</span></td></tr>
+          <tr><td data-i18n="compareTdApi">API 访问</td><td data-i18n="compareTdFreeNo">—</td><td class="highlight-col" data-i18n="compareTdBasicNo">—</td><td data-i18n="compareTdProYes"><span class="check">✓</span></td><td data-i18n="compareTdTeamYes"><span class="check">✓</span></td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="notes">
-      <h4>💡 说明</h4>
+      <h4>💡 <span data-i18n="notesTitle">说明</span></h4>
       <ul>
-        <li>积分包购买后立即到账，积分永不过期</li>
-        <li>月费会员每月自动续费，积分当月有效，可叠加购买积分包</li>
-        <li>每使用一次扣除 1 积分（与图片尺寸无关）</li>
-        <li>支付货币为 USD，由 PayPal 按实时汇率结算</li>
-        <li>如需开具发票或企业采购，请联系我们</li>
+        <li data-i18n="note1">积分包购买后立即到账，积分永不过期</li>
+        <li data-i18n="note2">月费会员每月自动续费，积分当月有效，可叠加购买积分包</li>
+        <li data-i18n="note3">每使用一次扣除 1 积分（与图片尺寸无关）</li>
+        <li data-i18n="note4">支付货币为 USD，由 PayPal 按实时汇率结算</li>
+        <li data-i18n="note5">如需开具发票或企业采购，请联系我们</li>
       </ul>
     </div>
 
     <div class="faq-section">
-      <h3>常见问题</h3>
+      <h3 data-i18n="faqTitle">常见问题</h3>
       <div class="faq-list">
-        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">积分包和月费会员有什么区别？</div><div class="faq-a">积分包是一次性购买，积分永不过期。月费会员每月自动续费，积分当月有效。月费用户也可以同时购买积分包。</div></div>
-        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">积分会过期吗？</div><div class="faq-a">购买所得积分永不过期。月费会员的积分当月有效，月底清零，不影响已购买的积分包。</div></div>
-        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">如何购买？</div><div class="faq-a">选择您需要的方案，点击 PayPal 按钮完成支付即可。支付完成后积分自动到账。</div></div>
-        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">可以退款吗？</div><div class="faq-a">积分购买后如未使用，可联系客服申请退款。已消耗的积分无法退款。</div></div>
-        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">支付失败怎么办？</div><div class="faq-a">如果支付过程中遇到问题，请检查 PayPal 账户是否有足够的余额或支付限额，通常可以重新尝试。</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q" data-i18n="faq1Q">积分包和月费会员有什么区别？</div><div class="faq-a" data-i18n="faq1A">积分包是一次性购买，积分永不过期。月费会员每月自动续费，积分当月有效。月费用户也可以同时购买积分包。</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q" data-i18n="faq2Q">积分会过期吗？</div><div class="faq-a" data-i18n="faq2A">购买所得积分永不过期。月费会员的积分当月有效，月底清零，不影响已购买的积分包。</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q" data-i18n="faq3Q">如何购买？</div><div class="faq-a" data-i18n="faq3A">选择您需要的方案，点击 PayPal 按钮完成支付即可。支付完成后积分自动到账。</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q" data-i18n="faq4Q">可以退款吗？</div><div class="faq-a" data-i18n="faq4A">积分购买后如未使用，可联系客服申请退款。已消耗的积分无法退款。</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q" data-i18n="faq5Q">支付失败怎么办？</div><div class="faq-a" data-i18n="faq5A">如果支付过程中遇到问题，请检查 PayPal 账户是否有足够的余额或支付限额，通常可以重新尝试。</div></div>
       </div>
     </div>
   </div>
 
   <div class="footer">
-    <p>BG Remover · <a href="/">首页</a> · <a href="/pricing">定价</a> · <a href="/faq">常见问题</a></p>
+    <p>BG Remover · <a href="/" data-i18n="footerHome">首页</a> · <a href="/pricing" data-i18n="footerPricing">定价</a> · <a href="/faq" data-i18n="footerFaq">常见问题</a></p>
   </div>
 
   <script>
+    // ── LANGUAGE SWITCHER ──────────────────────────────────────────────────────
+    const LANG = { zh: {}, en: {} };
+
+    LANG.zh = {
+      backToHome: '← 返回首页',
+      heroTitle: '简单透明，按需付费',
+      heroDesc: '注册即送 <strong style="color:#111827">3 积分</strong>，用完购买积分包。无月费、无订阅、直接使用。',
+      tabPacks: '💎 积分包',
+      tabMonthly: '📅 月费会员',
+      sectionPacksLabel: '一次性购买 · 永不过期 · USD 结算',
+      sectionMonthlyLabel: '每月自动到账 · 连续使用更划算',
+      packStarterLabel: '体验',
+      packStarterName: '体验包',
+      packStarterDesc: '先试试水',
+      packStarterCredits: '30 积分',
+      packStarterPer: '≈ $0.80 USD · ¥0.20/次',
+      packStarterF1: '30 次使用',
+      packStarterF2: '积分永不过期',
+      packStarterF3: '无水印输出',
+      packStarterF4: '720p 下载',
+      packValueBadge: '性价比之选',
+      packValueLabel: '推荐',
+      packValueName: '超值包',
+      packValueDesc: '最受欢迎的选择',
+      packValueCredits: '200 积分',
+      packValuePer: '≈ $4.00 USD · ¥0.15/次',
+      packValueF1: '200 次使用',
+      packValueF2: '积分永不过期',
+      packValueF3: '无水印输出',
+      packValueF4: '4K 下载',
+      packValueF5: '优先处理',
+      packBulkLabel: '大额',
+      packBulkName: '畅用包',
+      packBulkDesc: '用得越多越划算',
+      packBulkCredits: '1000 积分',
+      packBulkPer: '≈ $13.50 USD · ¥0.10/次',
+      packBulkF1: '1000 次使用',
+      packBulkF2: '积分永不过期',
+      packBulkF3: '无水印输出',
+      packBulkF4: '4K 下载',
+      packBulkF5: '最高优先级',
+      packBulkF6: '优先客服支持',
+      basicBadge: '¥9.9/月',
+      basicName: '基础版',
+      basicTagline: '轻度使用',
+      basicPeriod: '/月',
+      basicCredits: '60 积分 / 月',
+      basicCostHint: '≈ $1.35 USD / 月',
+      basicF1: '每月 60 积分',
+      basicF2: '积分当月有效',
+      basicF3: '无水印输出',
+      basicF4: '4K 下载',
+      proBadge: '最受欢迎',
+      proName: '专业版',
+      proTagline: '频繁使用',
+      proPeriod: '/月',
+      proCredits: '200 积分 / 月',
+      proCostHint: '≈ $3.95 USD / 月',
+      proF1: '每月 200 积分',
+      proF2: '积分当月有效',
+      proF3: '无水印输出',
+      proF4: '4K 下载',
+      proF5: '优先处理',
+      proF6: 'API 访问（即将）',
+      teamBadge: '¥99/月',
+      teamName: '团队版',
+      teamTagline: '高强度使用',
+      teamPeriod: '/月',
+      teamCredits: '800 积分 / 月',
+      teamCostHint: '≈ $13.50 USD / 月',
+      teamF1: '每月 800 积分',
+      teamF2: '积分当月有效',
+      teamF3: '无水印 + 原始尺寸',
+      teamF4: '最高优先级',
+      teamF5: '完整 API 访问',
+      comingSoon: '即将上线',
+      compareTitle: '功能对比',
+      compareTh1: '功能',
+      compareTh2: '免费试用<br><span style="font-size:11px;color:#9ca3af;font-weight:400">注册送3积分</span>',
+      compareTh3: '基础版<br><span style="font-size:11px;font-weight:400">¥9.9/月</span>',
+      compareTh4: '专业版<br><span style="font-size:11px;color:#9ca3af;font-weight:400">¥29/月</span>',
+      compareTh5: '团队版<br><span style="font-size:11px;color:#9ca3af;font-weight:400">¥99/月</span>',
+      compareTdCredits: '积分',
+      compareTdFreeCredits: '3（永久）',
+      compareTdBasicCredits: '60/月',
+      compareTdProCredits: '200/月',
+      compareTdTeamCredits: '800/月',
+      compareTdExpiry: '积分有效期',
+      compareTdFreeExpiry: '永不过期',
+      compareTdBasicExpiry: '当月有效',
+      compareTdProExpiry: '当月有效',
+      compareTdTeamExpiry: '当月有效',
+      compareTdStack: '积分包叠加',
+      compareTdStackVal: '<span class="check">✓</span> 月费用户可同时购买积分包',
+      compareTdWatermark: '去水印',
+      compareTdFreeNo: '—',
+      compareTdBasicYes: '<span class="check">✓</span>',
+      compareTdProYes: '<span class="check">✓</span>',
+      compareTdTeamYes: '<span class="check">✓</span>',
+      compareTdBasicNo: '—',
+      compareTdProNo: '—',
+      compareTd4k: '4K 下载',
+      compareTdOriginal: '原始尺寸',
+      compareTdPriority: '优先处理',
+      compareTdApi: 'API 访问',
+      notesTitle: '说明',
+      note1: '积分包购买后立即到账，积分永不过期',
+      note2: '月费会员每月自动续费，积分当月有效，可叠加购买积分包',
+      note3: '每使用一次扣除 1 积分（与图片尺寸无关）',
+      note4: '支付货币为 USD，由 PayPal 按实时汇率结算',
+      note5: '如需开具发票或企业采购，请联系我们',
+      faqTitle: '常见问题',
+      faq1Q: '积分包和月费会员有什么区别？',
+      faq1A: '积分包是一次性购买，积分永不过期。月费会员每月自动续费，积分当月有效。月费用户也可以同时购买积分包。',
+      faq2Q: '积分会过期吗？',
+      faq2A: '购买所得积分永不过期。月费会员的积分当月有效，月底清零，不影响已购买的积分包。',
+      faq3Q: '如何购买？',
+      faq3A: '选择您需要的方案，点击 PayPal 按钮完成支付即可。支付完成后积分自动到账。',
+      faq4Q: '可以退款吗？',
+      faq4A: '积分购买后如未使用，可联系客服申请退款。已消耗的积分无法退款。',
+      faq5Q: '支付失败怎么办？',
+      faq5A: '如果支付过程中遇到问题，请检查 PayPal 账户是否有足够的余额或支付限额，通常可以重新尝试。',
+      footerHome: '首页',
+      footerPricing: '定价',
+      footerFaq: '常见问题',
+      paymentSuccess: '✅ 支付成功！积分已到账，请刷新页面查看。',
+      paymentCancelled: 'ℹ️ 支付已取消，可以继续选择其他方案。',
+      paypalError: 'PayPal 错误: ',
+      orderFail: '创建订单失败: ',
+      creditsFail: '积分到账失败，请联系客服。订单号: ',
+      verifyFail: '验证失败，请联系客服: ',
+    };
+
+    LANG.en = {
+      backToHome: '← Back to Home',
+      heroTitle: 'Simple & Transparent, Pay As You Go',
+      heroDesc: 'Get <strong style="color:#111827">3 free credits</strong> on signup. Buy credit packs when you run out. No subscriptions, no monthly fees.',
+      tabPacks: '💎 Credit Packs',
+      tabMonthly: '📅 Monthly Plans',
+      sectionPacksLabel: 'One-time Purchase · Never Expire · USD',
+      sectionMonthlyLabel: 'Auto-renewed monthly · Best for regular users',
+      packStarterLabel: 'Starter',
+      packStarterName: 'Starter Pack',
+      packStarterDesc: 'Try it out',
+      packStarterCredits: '30 Credits',
+      packStarterPer: '≈ $0.80 USD · $0.20/use',
+      packStarterF1: '30 uses',
+      packStarterF2: 'Credits never expire',
+      packStarterF3: 'No watermark output',
+      packStarterF4: '720p downloads',
+      packValueBadge: 'Best Value',
+      packValueLabel: 'Popular',
+      packValueName: 'Value Pack',
+      packValueDesc: 'Most popular choice',
+      packValueCredits: '200 Credits',
+      packValuePer: '≈ $4.00 USD · $0.15/use',
+      packValueF1: '200 uses',
+      packValueF2: 'Credits never expire',
+      packValueF3: 'No watermark output',
+      packValueF4: '4K downloads',
+      packValueF5: 'Priority processing',
+      packBulkLabel: 'Bulk',
+      packBulkName: 'Bulk Pack',
+      packBulkDesc: 'More usage, better value',
+      packBulkCredits: '1000 Credits',
+      packBulkPer: '≈ $13.50 USD · $0.10/use',
+      packBulkF1: '1000 uses',
+      packBulkF2: 'Credits never expire',
+      packBulkF3: 'No watermark output',
+      packBulkF4: '4K downloads',
+      packBulkF5: 'Highest priority',
+      packBulkF6: 'Priority support',
+      basicBadge: '$9.9/mo',
+      basicName: 'Basic',
+      basicTagline: 'Light use',
+      basicPeriod: '/mo',
+      basicCredits: '60 Credits / month',
+      basicCostHint: '≈ $1.35 USD / month',
+      basicF1: '60 credits per month',
+      basicF2: 'Credits valid for the month',
+      basicF3: 'No watermark output',
+      basicF4: '4K downloads',
+      proBadge: 'Most Popular',
+      proName: 'Pro',
+      proTagline: 'Frequent use',
+      proPeriod: '/mo',
+      proCredits: '200 Credits / month',
+      proCostHint: '≈ $3.95 USD / month',
+      proF1: '200 credits per month',
+      proF2: 'Credits valid for the month',
+      proF3: 'No watermark output',
+      proF4: '4K downloads',
+      proF5: 'Priority processing',
+      proF6: 'API access (coming soon)',
+      teamBadge: '$99/mo',
+      teamName: 'Team',
+      teamTagline: 'Heavy use',
+      teamPeriod: '/mo',
+      teamCredits: '800 Credits / month',
+      teamCostHint: '≈ $13.50 USD / month',
+      teamF1: '800 credits per month',
+      teamF2: 'Credits valid for the month',
+      teamF3: 'No watermark + original size',
+      teamF4: 'Highest priority',
+      teamF5: 'Full API access',
+      comingSoon: 'Coming Soon',
+      compareTitle: 'Feature Comparison',
+      compareTh1: 'Feature',
+      compareTh2: 'Free Trial<br><span style="font-size:11px;color:#9ca3af;font-weight:400">3 credits on signup</span>',
+      compareTh3: 'Basic<br><span style="font-size:11px;font-weight:400">$9.9/mo</span>',
+      compareTh4: 'Pro<br><span style="font-size:11px;color:#9ca3af;font-weight:400">$29/mo</span>',
+      compareTh5: 'Team<br><span style="font-size:11px;color:#9ca3af;font-weight:400">$99/mo</span>',
+      compareTdCredits: 'Credits',
+      compareTdFreeCredits: '3 (permanent)',
+      compareTdBasicCredits: '60/mo',
+      compareTdProCredits: '200/mo',
+      compareTdTeamCredits: '800/mo',
+      compareTdExpiry: 'Credit validity',
+      compareTdFreeExpiry: 'Never expire',
+      compareTdBasicExpiry: 'Valid for the month',
+      compareTdProExpiry: 'Valid for the month',
+      compareTdTeamExpiry: 'Valid for the month',
+      compareTdStack: 'Credit pack stacking',
+      compareTdStackVal: '<span class="check">✓</span> Monthly subscribers can also buy credit packs',
+      compareTdWatermark: 'No watermark',
+      compareTdFreeNo: '—',
+      compareTdBasicYes: '<span class="check">✓</span>',
+      compareTdProYes: '<span class="check">✓</span>',
+      compareTdTeamYes: '<span class="check">✓</span>',
+      compareTdBasicNo: '—',
+      compareTdProNo: '—',
+      compareTd4k: '4K downloads',
+      compareTdOriginal: 'Original size',
+      compareTdPriority: 'Priority processing',
+      compareTdApi: 'API access',
+      notesTitle: 'Notes',
+      note1: 'Credit packs are credited instantly upon purchase and never expire',
+      note2: 'Monthly plans auto-renew monthly; credits are valid for the month and can be stacked with credit packs',
+      note3: 'Each use deducts 1 credit (regardless of image size)',
+      note4: 'Payments are in USD, settled by PayPal at the live exchange rate',
+      note5: 'For invoicing or enterprise purchases, please contact us',
+      faqTitle: 'FAQ',
+      faq1Q: "What's the difference between credit packs and monthly plans?",
+      faq1A: 'Credit packs are one-time purchases with credits that never expire. Monthly plans auto-renew and credits are valid for the month. Monthly subscribers can also purchase credit packs.',
+      faq2Q: 'Do credits expire?',
+      faq2A: 'Purchased credits never expire. Monthly plan credits are valid for the month and reset at month-end, without affecting purchased credit packs.',
+      faq3Q: 'How do I purchase?',
+      faq3A: 'Select your desired plan and complete payment via the PayPal button. Credits are credited automatically after payment.',
+      faq4Q: 'Can I get a refund?',
+      faq4A: 'Unused credits can be refunded by contacting support. Consumed credits are non-refundable.',
+      faq5Q: 'What if payment fails?',
+      faq5A: 'If you encounter payment issues, check your PayPal account balance or limits, then try again.',
+      footerHome: 'Home',
+      footerPricing: 'Pricing',
+      footerFaq: 'FAQ',
+      paymentSuccess: 'Payment successful! Credits have been credited. Please refresh the page.',
+      paymentCancelled: 'Payment cancelled. You can continue choosing other plans.',
+      paypalError: 'PayPal error: ',
+      orderFail: 'Failed to create order: ',
+      creditsFail: 'Failed to credit points. Please contact support. Order ID: ',
+      verifyFail: 'Verification failed. Please contact support: ',
+    };
+
+    function toggleLang() {
+      const lang = localStorage.getItem('lang') === 'en' ? 'zh' : 'en';
+      localStorage.setItem('lang', lang);
+      applyLang(lang);
+    }
+
+    function applyLang(lang) {
+      const btn = document.getElementById('langToggle');
+      if (btn) btn.textContent = lang === 'en' ? '中' : 'EN';
+      document.querySelectorAll('[data-i18n]').forEach(e => {
+        const key = e.getAttribute('data-i18n');
+        if (LANG[lang][key]) e.innerHTML = LANG[lang][key];
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('lang') || 'zh';
+      applyLang(lang);
+    });
+
+    // ── APP ───────────────────────────────────────────────────────────────────
     let currentUser = null;
 
     async function init() {
@@ -322,12 +609,14 @@
       if (!result) return;
       if (params.get('payment') === 'success') {
         result.className = 'payment-result success';
-        result.textContent = '✅ 支付成功！积分已到账，请刷新页面查看。';
+        const lang = localStorage.getItem('lang') || 'zh';
+        result.textContent = LANG[lang].paymentSuccess;
         result.style.display = 'block';
         window.history.replaceState({}, '', '/pricing');
       } else if (params.get('payment') === 'cancelled') {
         result.className = 'payment-result info';
-        result.textContent = 'ℹ️ 支付已取消，可以继续选择其他方案。';
+        const lang = localStorage.getItem('lang') || 'zh';
+        result.textContent = LANG[lang].paymentCancelled;
         result.style.display = 'block';
         window.history.replaceState({}, '', '/pricing');
       }
@@ -353,7 +642,8 @@
           return onPackApprove(packId, data.orderID);
         },
         onError: function(err) {
-          alert('PayPal 错误: ' + err);
+          const lang = localStorage.getItem('lang') || 'zh';
+          alert(LANG[lang].paypalError + err);
         },
       }).render('#paypal-btn-' + packId);
     }
@@ -373,7 +663,7 @@
         if (!res.ok) throw new Error(data.error || 'Order failed');
         return data.orderID;
       } catch (e) {
-        alert('创建订单失败: ' + e.message);
+        alert((localStorage.getItem('lang') === 'en' ? LANG.en.orderFail : LANG.zh.orderFail) + e.message);
         return null;
       }
     }
@@ -389,10 +679,12 @@
         if (data.success) {
           window.location.href = '/profile?payment=success&credits=' + data.creditsAdded;
         } else {
-          alert('积分到账失败，请联系客服。订单号: ' + orderID);
+          const lang = localStorage.getItem('lang') || 'zh';
+          alert(LANG[lang].creditsFail + orderID);
         }
       } catch (e) {
-        alert('验证失败，请联系客服: ' + e.message);
+        const lang = localStorage.getItem('lang') || 'zh';
+        alert(LANG[lang].verifyFail + e.message);
       }
     }
 
@@ -410,16 +702,16 @@
         });
         const data = await res.json();
         if (!res.ok) {
-          alert('订阅功能配置中，请稍后再试：' + (data.error || 'Unknown error'));
+          alert('Subscription setup in progress. Please try again later: ' + (data.error || 'Unknown error'));
           return;
         }
         if (data.approvalURL) {
           window.location.href = data.approvalURL;
         } else {
-          alert('订阅创建失败，请稍后再试');
+          alert('Failed to create subscription. Please try again.');
         }
       } catch (e) {
-        alert('订阅错误: ' + e.message);
+        alert('Subscription error: ' + e.message);
       }
     }
 
